@@ -1,50 +1,59 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-//le lab s'appelle ap pour access point
-
 #include <ESP8266WebServer.h>
-                      
+#include <LittleFS.h>
+
 ESP8266WebServer httpd(80);
-int test = 2;
-void HandleRacine(){
-            
-  httpd.send(200, "text/html", "<html><body>"+ String(test) + "</body></html>");
+
+String GetContentType(String filename){
+  struct Mime{
+    String ext, type;
+  }
+
+  mimeType[] = {
+    {".html", "text/html"}
+  };
+
+  for (int i = 0; i < sizeof(mimeType) / sizeof(Mime); i++)
+  {
+    if(filename.endsWith(mimeType[i].ext))
+      return mimeType[i].type;
+  }
+
+  return "application/octet-stream";
+  
 }
 
-bool led = false;
-void HandleLed(){
-  if(httpd.hasArg("action")){
-    String action = httpd.arg("action");
-    if(action == "on")
-      led = true;
-    else if (action == "off")
-      led = false;
+void HandleFileRequest(){
+  String fileName = httpd.uri();
+  Serial.println(fileName); // 
+  if(fileName.endsWith("/"))
+    fileName = "index.html";
+  if(LittleFS.exists(fileName)){
+    File file = LittleFS.open(fileName,"r");
+    httpd.streamFile(file, GetContentType(fileName));
+    file.close();
   }
-  String reponse = "<html><body>";
-    reponse += "<a href=\"/led?action=on\">ON</a>";
-    reponse += "<a href=\"/led?action=off\">OFF</a>";
-    reponse += "<div style=\"width: 10px; height: 10px; background-color: ";
-    reponse += (led ? "green" : "red");
-    reponse += "\"></div>";
-    reponse += "</body></html>";
+  else {
+    httpd.send(404,"text/plain", "404 not found");
+  }
 
-    httpd.send(200, "text/html", reponse.c_str()); 
 }
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TravailPratique2", "motdepasse");
+  WiFi.softAP("TravailPratique2-w", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
-  //Serveur web
-  httpd.on("/", HandleRacine);
-  httpd.on("/led", HandleLed);
+  LittleFS.begin();
+  httpd.onNotFound(HandleFileRequest);
   httpd.begin();
+
 }
 
 void loop() {
-  httpd.handleClient();
-  test++;
+ httpd.handleClient();
 }
+
