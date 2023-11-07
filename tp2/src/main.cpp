@@ -20,8 +20,20 @@ String GetContentType(String filename){
       return mimeType[i].type;
   }
 
-  return "application/octet-stream";
+  return "octet-stream";
   
+}
+
+void toggleHeatingState() {
+  String stateParam = httpd.arg("state");
+  Serial.println(stateParam);
+  if (stateParam == "true") {
+    // Activer le chauffage (true)
+    // Mettez votre logique de contrôle du chauffage ici
+  } else if (stateParam == "false") {
+    // Désactiver le chauffage (false)
+    // Mettez votre logique de contrôle du chauffage ici
+  }
 }
 
 void HandleFileRequest(){
@@ -75,6 +87,8 @@ void setup() {
   httpd.onNotFound(HandleFileRequest);
   httpd.begin();
 
+  httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
+
 }
 
 void CalculerTempsTemperatureStable(){
@@ -102,6 +116,8 @@ void CalculerTemperature(){
 }
 
 void loop() {
+  arretTotal = true;
+  httpd.handleClient();
   if(arretTotal != true){
 
     CalculerTemperature();
@@ -141,7 +157,7 @@ void loop() {
         max5Minutes = maxActuel;
       }
 
-      httpd.handleClient();
+      //httpd.handleClient();
     }
   }
 }

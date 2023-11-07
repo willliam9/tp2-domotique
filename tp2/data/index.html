@@ -59,11 +59,35 @@
             <p>Temps entre 41 et 45°C: <span id="temperatureDuration"></span></p>
             <p>Intensité de chauffage: <span id="heatingIntensity"></span>%</p>
         </div>
-        <button onclick="toggleHeating()">Activer/Désactiver Chauffage</button>
+        <button id="toggleButton" onclick="toggleHeating()">Activer/Désactiver Chauffage</button>
     </div>
 
     <script>
-        // Ajoutez ici le script JavaScript pour mettre à jour les valeurs dynamiquement
+        var heatingState = false; // État initial du chauffage (éteint)
+    
+        function toggleHeating() {
+            heatingState = !heatingState; // Inversez l'état actuel
+            updateHeatingStateUI(); // Mettez à jour l'interface utilisateur en fonction du nouvel état
+            
+            // Effectuez une requête AJAX pour envoyer l'état du chauffage au serveur
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
+            xhr.send();
+        }
+    
+        function updateHeatingStateUI() {
+            var button = document.getElementById('toggleButton');
+            if (heatingState) {
+                button.textContent = 'Désactiver Chauffage';
+                button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
+            } else {
+                button.textContent = 'Activer Chauffage';
+                button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
+            }
+        }
+    
+        // Appelez cette fonction au chargement de la page pour mettre à jour l'interface utilisateur
+        updateHeatingStateUI();
     </script>
 </body>
 
