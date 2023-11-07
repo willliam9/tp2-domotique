@@ -68,7 +68,7 @@ void setup() {
 
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TravailPratique2-w", "motdepasse");
+  WiFi.softAP("TravailPratique2-Stan", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
@@ -102,7 +102,8 @@ void CalculerTemperature(){
 }
 
 void loop() {
-  if(arretTotal != true){
+  httpd.handleClient();
+  if(arretTotal == false){
 
     CalculerTemperature();
 
@@ -140,8 +141,6 @@ void loop() {
         min5Minutes = minActuel;
         max5Minutes = maxActuel;
       }
-
-      httpd.handleClient();
     }
   }
 }
