@@ -1,48 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contrôle de la Mijoteuse</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
         }
 
         .container {
             text-align: center;
-            padding: 20px;
-            border: 2px solid #ccc;
+            padding: 40px;
             border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             margin-bottom: 20px;
+            font-size: 24px;
+            color: #4caf50;
         }
 
         .temperature-info {
-            margin: 10px 0;
+            margin: 20px 0;
+        }
+
+        .temperature-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .temperature-value {
+            font-size: 18px;
+            color: #4caf50;
+        }
+
+        .duration-info {
+            font-style: italic;
+            margin-top: 10px;
+            color: #777;
+        }
+
+        .heating-intensity-bar {
+            height: 20px;
+            width: 100%;
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .heating-intensity-fill {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            transition: width 0.3s ease;
+        }
+
+        .button-container {
+            margin-top: 30px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #4caf50;
-            color: #fff;
             border: none;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button.active {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        button.inactive {
+            background-color: #f44336;
+            color: white;
         }
     </style>
 </head>
@@ -51,43 +99,108 @@
     <div class="container">
         <h1>Contrôle de la Mijoteuse</h1>
         <div class="temperature-info">
-            <p>Température actuelle: <span id="currentTemperature"></span> °C</p>
-            <p>Température minimale (2 dernières minutes): <span id="minTemp2Minutes"></span> °C</p>
-            <p>Température maximale (2 dernières minutes): <span id="maxTemp2Minutes"></span> °C</p>
-            <p>Température minimale (5 dernières minutes): <span id="minTemp5Minutes"></span> °C</p>
-            <p>Température maximale (5 dernières minutes): <span id="maxTemp5Minutes"></span> °C</p>
-            <p>Temps entre 41 et 45°C: <span id="temperatureDuration"></span></p>
-            <p>Intensité de chauffage: <span id="heatingIntensity"></span>%</p>
+			<p><span class="temperature-label"><i class="fas fa-thermometer-half"></i> Température actuelle:</span> <span class="temperature-value" id="currentTemperature"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (2 dernières minutes):</span> <span class="temperature-value" id="minTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (2 dernières minutes):</span> <span class="temperature-value" id="maxTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (5 dernières minutes):</span> <span class="temperature-value" id="minTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (5 dernières minutes):</span> <span class="temperature-value" id="maxTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-clock"></i> Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
+		</div>
+        <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
+        <div class="heating-intensity-bar">
+            <div class="heating-intensity-fill" id="heatingIntensityBar"></div>
         </div>
-        <button id="toggleButton" onclick="toggleHeating()">Activer/Désactiver Chauffage</button>
+        <div class="button-container">
+            <button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer/Désactiver Chauffage</button>
+        </div>
     </div>
 
     <script>
-        var heatingState = false; // État initial du chauffage (éteint)
-    
+    var heatingState = false; // État initial du chauffage (éteint)
+
+    function toggleHeating() {
+        heatingState = !heatingState; // Inversez l'état actuel
+        updateHeatingStateUI(); // Mettre à jour l'interface utilisateur en fonction du nouvel état
+        
+        // Une requête AJAX est effectuée pour envoyer l'état du chauffage au serveur
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
+        xhr.send();
+    }
+
+    function updateHeatingStateUI() {
+        var button = document.getElementById('toggleButton');
+        if (heatingState) {
+            button.textContent = 'Désactiver Chauffage';
+            button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
+        } else {
+            button.textContent = 'Activer Chauffage';
+            button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
+        }
+    }
+
+    // Cette fonction dois être appelée au chargement de la page pour mettre à jour l'interface utilisateur
+    updateHeatingStateUI();
+        var heatingIntensity = 50; // Iintensité de chauffage réelle (en pourcentage)
+        var currentTemperature = 10;
+
         function toggleHeating() {
-            heatingState = !heatingState; // Inversez l'état actuel
-            updateHeatingStateUI(); // Mettez à jour l'interface utilisateur en fonction du nouvel état
-            
-            // Effectuez une requête AJAX pour envoyer l'état du chauffage au serveur
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
-            xhr.send();
+             heatingState = !heatingState; // Inversez l'état actuel
+        updateHeatingStateUI(); // Mettez à jour l'interface utilisateur en fonction du nouvel état
+        
+        // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
+        xhr.send();
         }
-    
-        function updateHeatingStateUI() {
-            var button = document.getElementById('toggleButton');
-            if (heatingState) {
-                button.textContent = 'Désactiver Chauffage';
-                button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
-            } else {
-                button.textContent = 'Activer Chauffage';
-                button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
-            }
+		function updateHeatingStateUI() {
+        var button = document.getElementById('toggleButton');
+        if (heatingState) {
+            button.textContent = 'Désactiver Chauffage';
+            button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
+        } else {
+            button.textContent = 'Activer Chauffage';
+            button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
         }
-    
-        // Appelez cette fonction au chargement de la page pour mettre à jour l'interface utilisateur
-        updateHeatingStateUI();
+    }
+
+        function updateHeatingIntensityUI() {
+            var intensityBar = document.getElementById('heatingIntensityBar');
+            intensityBar.style.width = (currentTemperature/50) *100 + '%';
+        }
+
+        // Mettez à jour l'intensité de chauffage toutes les 2 secondes (à titre d'exemple)
+        setInterval(function() {
+            // Remplacez cette ligne par votre logique pour récupérer l'intensité de chauffage actuelle du serveur
+            heatingIntensity = Math.floor(Math.random() * 100); // Exemple : intensité de chauffage aléatoire entre 0 et 100%
+
+            // Mettre à jour l'interface utilisateur
+            updateHeatingIntensityUI();
+        }, 2000);
+		
+		function getTemperature() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/temperature', true);
+
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				currentTemperature = response.temperature;
+				if(currentTemperature == 0 || currentTemperature == null){
+					currentTemperature = 10;
+				}
+				document.getElementById('currentTemperature').textContent = currentTemperature + " °C";
+			}
+		};
+
+		xhr.send();
+	}
+
+	// Appelez getTemperature() à intervalles réguliers
+    // Appel initial
+	getTemperature();
+	updateHeatingStateUI();
+	updateHeatingIntensityUI();
     </script>
 </body>
 
