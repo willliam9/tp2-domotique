@@ -45,6 +45,9 @@
 
         .temperature-value {
             font-size: 18px;
+        }
+
+        .txt-green{
             color: #4caf50;
         }
 
@@ -147,14 +150,14 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Contrôle de la Mijoteuse</h1>
+    <div class="container temperature-value">
+        <h1 class="txt-green">Contrôle de la Mijoteuse</h1>
         <div class="temperature-info">
-			<p><span class="temperature-label"><i class="fas fa-thermometer-half"></i> Température actuelle:</span> <span class="temperature-value" id="currentTemperature"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (2 dernières minutes):</span> <span class="temperature-value" id="minTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (2 dernières minutes):</span> <span class="temperature-value" id="maxTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (5 dernières minutes):</span> <span class="temperature-value" id="minTemp5Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (5 dernières minutes):</span> <span class="temperature-value" id="maxTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-thermometer-half"></i> Température actuelle:</span> <span id="currentTemperature"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (2 dernières minutes):</span> <span id="minTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (2 dernières minutes):</span> <span id="maxTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (5 dernières minutes):</span> <span id="minTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (5 dernières minutes):</span> <span id="maxTemp5Minutes"></span> °C</p>
 			<p><span class="temperature-label"><i class="fas fa-clock"></i> Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
 		</div>
         <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
@@ -163,14 +166,14 @@
         </div>
 
 
-	<div class="button-container" class="">
-		<button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer/Désactiver Chauffage</button>
+	<div class="button-container" class="temperature-value">
+		<button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
 		<button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()"><i class="fas fa-cogs"></i></button>
 	</div>
-	<div id="optionsPanel" class="options-panel" style="display: none;">
+	<div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
 		<div class="option-label">Taille du texte</div>
 		<div class="option-slider">
-			<input type="range" min="12" max="36" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
+			<input type="range" min="12" max="28" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
 		</div>
 		<div class="option-label">Police d'écriture</div>
 		<select id="fontSelect" class="option-font-select" onchange="changeFont(this.value)">
@@ -178,8 +181,7 @@
 			<option value="'Comic Sans MS', cursive">Comic Sans MS</option>
 			<option value="'Courier New', monospace">Courier New</option>
 			<option value="'Pacifico', cursive">Pacifico</option>
-			<option value="'Dancing Script', cursive">Dancing Script</option>
-			<option value="'Amatic SC', cursive">Amatic SC</option>
+			<option value="''Cookie', cursive">Cookie</option>
 		</select>
 	</div>
 
@@ -189,8 +191,8 @@
 	var heatingState = false; // État initial du chauffage (éteint)
 	var currentTemperature = 10;
     function toggleHeating() {
-        heatingState = !heatingState; // Inversez l'état actuel
-        updateHeatingStateUI(); // Mettre à jour l'interface utilisateur en fonction du nouvel état
+        heatingState = !heatingState; 
+        updateHeatingStateUI();
         
         // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
         var xhr = new XMLHttpRequest();
@@ -203,34 +205,22 @@
         var button = document.getElementById('toggleButton');
         if (heatingState) {
             button.textContent = 'Désactiver Chauffage';
-            button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
+            button.style.backgroundColor = '#4caf50'; 
         } else {
             button.textContent = 'Activer Chauffage';
-            button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
+            button.style.backgroundColor = '#f44336';
         }
     }
 
-    // Appelez cette fonction au chargement de la page pour mettre à jour l'interface utilisateur
-    updateHeatingStateUI();
-        var heatingIntensity = 50; // Remplacez cette valeur par l'intensité de chauffage réelle (en pourcentage)
-        function toggleHeating() {
-             heatingState = !heatingState; // Inversez l'état actuel
-        updateHeatingStateUI(); // Mettre à jour l'interface utilisateur en fonction du nouvel état
+    var heatingIntensity = 50; // La valeur dois être remplacer par l'intensité de chauffage réelle
+    function toggleHeating() {
+        heatingState = !heatingState;
+        updateHeatingStateUI();
         
         // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
         xhr.send();
-        }
-		function updateHeatingStateUI() {
-        var button = document.getElementById('toggleButton');
-        if (heatingState) {
-            button.textContent = 'Désactiver Chauffage';
-            button.style.backgroundColor = '#4caf50'; // Vert pour indiquer que le chauffage est activé
-        } else {
-            button.textContent = 'Activer Chauffage';
-            button.style.backgroundColor = '#f44336'; // Rouge pour indiquer que le chauffage est désactivé
-        }
     }
 
 	function updateHeatingIntensityUI() {
@@ -238,33 +228,52 @@
 		intensityBar.style.width = heatingIntensity / currentTemperature + '%';
 	}
 
-	//Mettre à jour l'intensité de chauffage toutes les 2 secondes (à titre d'exemple)
+	//Mettre à jour l'intensité de chauffage toutes les 2 secondes. Pour tester
 	setInterval(function() {
-		// Remplacez cette ligne par votre logique pour récupérer l'intensité de chauffage actuelle du serveur -->
 		heatingIntensity = currentTemperature / heatingIntensity * 100; //Math.floor(Math.random() * 100);
-
-		// Mettre à jour l'interface utilisateur
 		updateHeatingIntensityUI();
 	}, 2000);
 	
 	function getTemperature() {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', '/temperature', true);
-
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
 				currentTemperature = response.temperature;
-				if(currentTemperature == 0 || currentTemperature == null){
-					currentTemperature = 10;
-				}
 				document.getElementById('currentTemperature').textContent = currentTemperature + " °C";
 			}
 		};
+		xhr.send();
+	}
 
+    function getTemperatureMin() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/temperaturemin', true);
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				var minTemp2Minutes = response.temperature;
+				document.getElementById('minTemp2Minutes').textContent = currentTemperature + " °C";
+			}
+		};
 		xhr.send();
 	}
 	
+    function getTemperatureMax() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/temperaturemax', true);
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				var maxTemp2Minutes = response.temperature;
+				document.getElementById('maxTemp2Minutes').textContent = maxTemp2Minutes + " °C";
+			}
+		};
+		xhr.send();
+	}
+	
+
 	function toggleOptionsPanel() {
 		var optionsPanel = document.getElementById('optionsPanel');
 		optionsPanel.style.display = (optionsPanel.style.display === 'block' || optionsPanel.style.display === '') ? 'none' : 'block';
@@ -284,11 +293,13 @@
 		});
 	}
 
-
-	// Appelez getTemperature() au chargement de la page ou à intervalles réguliers
-	getTemperature(); // Appel initial
-	updateHeatingStateUI();
+    // Appelle de fonction au chargement de la page pour mettre à jour l'interface utilisateur
+    // Dois être appeler a des intervalle réguliers 
+	getTemperature();
+    getTemperatureMin();
+    getTemperatureMax();
 	updateHeatingIntensityUI();
+    updateHeatingStateUI();
     </script>
 </body>
 

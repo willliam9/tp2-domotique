@@ -65,11 +65,19 @@ void toggleHeatingState() {
 }
 
 void handleTemperatureRequest() {
-  // Mesurez la température à partir de votre capteur thermique
-  // Construisez la réponse JSON contenant la température
   String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-  // Envoyez la réponse JSON au client
+void handleTemperatureMinRequest() {
+  String jsonResponse = "{\"temperaturemin\": " + String(min2Minutes) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
+
+void handleTemperatureMaxRequest() {
+  String jsonResponse = "{\"temperaturemax\": " + String(max2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
   String stateParam = httpd.arg("state");
 }
@@ -103,6 +111,8 @@ void setup() {
   httpd.onNotFound(HandleFileRequest);
   httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
   httpd.on("/temperature", HTTP_GET, handleTemperatureRequest);
+  httpd.on("/temperaturemin", HTTP_GET, handleTemperatureMinRequest);
+  httpd.on("/temperaturemax", HTTP_GET, handleTemperatureMaxRequest);
   httpd.begin();
 
 }
