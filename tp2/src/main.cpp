@@ -26,6 +26,9 @@ unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
 
+int delaisTemp = 1000;
+unsigned long dernierMillisTemp;
+
 ESP8266WebServer httpd(80);
 
 String GetContentType(String filename){
@@ -52,13 +55,9 @@ void toggleHeatingState() {
     String stateParam = httpd.arg("state");
     Serial.println(stateParam);
     if (stateParam == "true") {
-      // Activer le chauffage (true)
-      // Mettez votre logique de contrôle du chauffage ici
       allumer = true;
       digitalWrite(relais,HIGH);
     } else if (stateParam == "false") {
-      // Désactiver le chauffage (false)
-      // Mettez votre logique de contrôle du chauffage ici
       allumer = false;
       digitalWrite(relais,LOW);
     }
@@ -97,15 +96,14 @@ void setup() {
 
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TravailPratique2-Stan", "motdepasse");
+  WiFi.softAP("TP2-W", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
   httpd.onNotFound(HandleFileRequest);
-  httpd.begin();
-
   httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
   httpd.on("/temperature", HTTP_GET, handleTemperatureRequest);
+  httpd.begin();
 
 }
 
@@ -134,12 +132,18 @@ void CalculerTemperature(){
 }
 
 void loop() {
-  //arretTotal = true;
   httpd.handleClient();
 
-  CalculerTemperature();
+  if( millis() % 50 != 0 )
+       return;
+  else {
+    CalculerTemperature();
+  }
 
-  if(temperatureCourante >= 50){
+  if(arretTotal == true){
+    
+  }
+  else if(temperatureCourante >= 50){
     arretTotal = true;
     digitalWrite(relais, LOW);
   }

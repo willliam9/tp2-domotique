@@ -157,7 +157,7 @@
 			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (5 dernières minutes):</span> <span class="temperature-value" id="maxTemp5Minutes"></span> °C</p>
 			<p><span class="temperature-label"><i class="fas fa-clock"></i> Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
 		</div>
-        <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 jours, 0 heures, 0 minutes</span></div>
+        <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
         <div class="heating-intensity-bar">
             <div class="heating-intensity-fill" id="heatingIntensityBar"></div>
         </div>
@@ -186,8 +186,8 @@
     </div>
 
     <script>
-         var heatingState = false; // État initial du chauffage (éteint)
-
+	var heatingState = false; // État initial du chauffage (éteint)
+	var currentTemperature = 10;
     function toggleHeating() {
         heatingState = !heatingState; // Inversez l'état actuel
         updateHeatingStateUI(); // Mettre à jour l'interface utilisateur en fonction du nouvel état
@@ -213,7 +213,6 @@
     // Appelez cette fonction au chargement de la page pour mettre à jour l'interface utilisateur
     updateHeatingStateUI();
         var heatingIntensity = 50; // Remplacez cette valeur par l'intensité de chauffage réelle (en pourcentage)
-
         function toggleHeating() {
              heatingState = !heatingState; // Inversez l'état actuel
         updateHeatingStateUI(); // Mettre à jour l'interface utilisateur en fonction du nouvel état
@@ -234,28 +233,28 @@
         }
     }
 
-        function updateHeatingIntensityUI() {
-            var intensityBar = document.getElementById('heatingIntensityBar');
-            intensityBar.style.width = heatingIntensity + '%';
-        }
+	function updateHeatingIntensityUI() {
+		var intensityBar = document.getElementById('heatingIntensityBar');
+		intensityBar.style.width = heatingIntensity / currentTemperature + '%';
+	}
 
-        // Mettre à jour l'intensité de chauffage toutes les 2 secondes (pour tester)
-        setInterval(function() {
-            // Remplacez cette ligne par votre logique pour récupérer l'intensité de chauffage actuelle du serveur
-            heatingIntensity = Math.floor(Math.random() * 100);
+	//Mettre à jour l'intensité de chauffage toutes les 2 secondes (à titre d'exemple)
+	setInterval(function() {
+		// Remplacez cette ligne par votre logique pour récupérer l'intensité de chauffage actuelle du serveur -->
+		heatingIntensity = currentTemperature / heatingIntensity * 100; //Math.floor(Math.random() * 100);
 
-            // Mettre à jour l'interface utilisateur
-            updateHeatingIntensityUI();
-        }, 2000);
-		
-		function getTemperature() {
+		// Mettre à jour l'interface utilisateur
+		updateHeatingIntensityUI();
+	}, 2000);
+	
+	function getTemperature() {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', '/temperature', true);
 
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
-				var currentTemperature = response.temperature;
+				currentTemperature = response.temperature;
 				if(currentTemperature == 0 || currentTemperature == null){
 					currentTemperature = 10;
 				}
@@ -284,6 +283,7 @@
 			element.style.fontFamily = font;
 		});
 	}
+
 
 	// Appelez getTemperature() au chargement de la page ou à intervalles réguliers
 	getTemperature(); // Appel initial
