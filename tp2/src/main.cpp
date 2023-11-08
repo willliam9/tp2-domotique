@@ -134,49 +134,47 @@ void CalculerTemperature(){
 }
 
 void loop() {
-  arretTotal = true;
+  //arretTotal = true;
   httpd.handleClient();
-  if(arretTotal != true){
 
-    CalculerTemperature();
+  CalculerTemperature();
 
-    if(temperatureCourante >= 50){
-      arretTotal = true;
-      digitalWrite(relais, LOW);
+  if(temperatureCourante >= 50){
+    arretTotal = true;
+    digitalWrite(relais, LOW);
+  }
+  else{
+    
+    if(temperatureCourante > 41 && temperatureCourante < 45){
+      CalculerTempsTemperatureStable();
     }
     else{
-      
-      if(temperatureCourante > 41 && temperatureCourante < 45){
-        CalculerTempsTemperatureStable();
-      }
-      else{
-        tempsTemperatureStable = "";
-        tempsAvantTemperatureStable = millis();
-      }
-
-
-      if(minActuel > temperatureCourante)
-        minActuel = temperatureCourante;
-
-      if(maxActuel < temperatureCourante)
-        maxActuel = temperatureCourante;
-
-      if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 > 2)
-      {
-        tempsEcoule2DernieresMinutes = millis();
-        min2Minutes = minActuel;
-        max2Minutes = maxActuel;
-      }
-  
-      if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 > 5)
-      {
-        tempsEcoule5DernieresMinutes = millis();
-        min5Minutes = minActuel;
-        max5Minutes = maxActuel;
-      }
-
-      //httpd.handleClient();
+      tempsTemperatureStable = "";
+      tempsAvantTemperatureStable = millis();
     }
+
+
+    if(minActuel > temperatureCourante)
+      minActuel = temperatureCourante;
+
+    if(maxActuel < temperatureCourante)
+      maxActuel = temperatureCourante;
+
+    if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 > 2)
+    {
+      tempsEcoule2DernieresMinutes = millis();
+      min2Minutes = minActuel;
+      max2Minutes = maxActuel;
+    }
+
+    if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 > 5)
+    {
+      tempsEcoule5DernieresMinutes = millis();
+      min5Minutes = minActuel;
+      max5Minutes = maxActuel;
+    }
+
+    //httpd.handleClient();
   }
 }
 
