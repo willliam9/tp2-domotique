@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
 
 <head>
@@ -153,12 +152,12 @@
     <div class="container temperature-value">
         <h1 class="txt-green">Contrôle de la Mijoteuse</h1>
         <div class="temperature-info">
-			<p><span class="temperature-label"><i class="fas fa-thermometer-half"></i> Température actuelle:</span> <span id="currentTemperature"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (2 dernières minutes):</span> <span id="minTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (2 dernières minutes):</span> <span id="maxTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-down"></i> Température minimale (5 dernières minutes):</span> <span id="minTemp5Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-arrow-up"></i> Température maximale (5 dernières minutes):</span> <span id="maxTemp5Minutes"></span> °C</p>
-			<p><span class="temperature-label"><i class="fas fa-clock"></i> Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
+			<p><span class="temperature-label">🌡️ Température actuelle:</span> <span id="currentTemperature"></span> °C</p>
+			<p><span class="temperature-label">⬇️ Température minimale (2 dernières minutes):</span> <span id="minTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label">⬆️ Température maximale (2 dernières minutes):</span> <span id="maxTemp2Minutes"></span> °C</p>
+			<p><span class="temperature-label">⬇️ Température minimale (5 dernières minutes):</span> <span id="minTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label">⬆️ Température maximale (5 dernières minutes):</span> <span id="maxTemp5Minutes"></span> °C</p>
+			<p><span class="temperature-label">🕓 Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
 		</div>
         <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
         <div class="heating-intensity-bar">
@@ -166,9 +165,9 @@
         </div>
 
 
-	<div class="button-container" class="temperature-value">
+	<div class="button-container temperature-value">
 		<button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
-		<button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()"><i class="fas fa-cogs"></i></button>
+		<button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
 	</div>
 	<div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
 		<div class="option-label">Taille du texte</div>
