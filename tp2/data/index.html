@@ -8,6 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contrôle de la Mijoteuse</title>
     <style>
+	
+		:root {
+			--button-background: #fff;
+			--button-text: #fff;
+			--options-panel-background: #fff;
+			--options-panel-text: #333;
+		}
+	
         body {
             font-family: 'Cookie', cursive;
             background-color: #f2f2f2;
@@ -33,27 +41,15 @@
             color: #4caf50;
         }
 
-        .temperature-info {
+        .temperature-info,
+        .duration-info {
             margin: 20px 0;
-        }
-
-        .temperature-label {
-            font-weight: bold;
+            font-size: 16px;
             color: #333;
         }
 
-        .temperature-value {
-            font-size: 18px;
-        }
-
-        .txt-green{
+        .txt-green {
             color: #4caf50;
-        }
-
-        .duration-info {
-            font-style: italic;
-            margin-top: 10px;
-            color: #777;
         }
 
         .heating-intensity-bar {
@@ -75,9 +71,13 @@
 
         .button-container {
             margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        button {
+        .button-container button {
+            margin: 0 10px;
             padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
@@ -86,103 +86,204 @@
             transition: background-color 0.3s ease;
         }
 
-        button.active {
-            background-color: #4caf50;
-            color: white;
+        .options-panel {
+            flex-direction: column;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            display: none;
+            transition: display 0.3s ease;
         }
 
-        button.inactive {
-            background-color: #f44336;
-            color: white;
+        @media screen and (max-width: 768px) {
+            .options-panel {
+                top: 10px;
+                right: 10px;
+            }
         }
-		
+
 		.options-panel {
-			display: flex;
 			flex-direction: column;
 			position: absolute;
 			top: 50px;
 			right: 20px;
-			background-color: #fff;
+			background-color: var(--button-background);
+			color: var(--button-text);
 			border: 1px solid #ccc;
 			padding: 20px;
 			border-radius: 5px;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 			z-index: 1;
-		}
-		
-		@media screen and (max-width: 768px) {
-			.options-panel {
-				top: 10px;
-				right: 10px;
-			}
+			display: none;
+			transition: display 0.3s ease;
 		}
 
 		.option-label {
 			margin-bottom: 10px;
 			font-weight: bold;
+			color: var(--options-panel-text);
+			background-color:var(--button-background);
 		}
 
-		.option-slider {
-			width: 100%;
-			margin-bottom: 20px;
-		}
-
-		.option-slider input {
-			width: 100%;
-		}
-
-		.option-font-select {
-			width: 100%;
+		.option-slider input,
+		.option-font-select,
+		.options-panel button {
+			width: calc(100% - 20px);
 			padding: 8px;
 			font-size: 16px;
 			border-radius: 5px;
 			border: 1px solid #ccc;
+			margin-bottom: 20px;
+			margin-right: 0;
 		}
 
 		.options-buttons {
 			display: flex;
 			align-items: center;
+			justify-content: flex-start;
 			margin-top: 20px;
+			flex-wrap: wrap;
+		}
+		
+		.options-toggle-button {
+			cursor: pointer;
+			font-size: 24px;
+			margin-bottom: 10px;
+		}
+		
+
+        .normal,
+        .dark-mode,
+        .cuisine-style,
+        .funky-style,
+        .ultra-light {
+            background: #f2f2f2;
+            color: #333;
+        }
+
+        .dark-mode {
+            background: #333;
+            color: #fff;
+        }
+
+        .cuisine-style {
+            background: #ffcccb;
+        }
+
+        .funky-style {
+            background: #ffdbcc;
+        }
+
+        .ultra-light {
+            background: #f9f9f9;
+        }
+
+        .normal .container {
+            background-color: #ffffff;
+        }
+
+        .dark-mode .container {
+            background-color: #1a1a1a;
+        }
+
+        .cuisine-style .container {
+            background-color: #ffdbcc;
+        }
+
+        .normal .container h1,
+        .normal .container p,
+        .dark-mode .container h1,
+        .dark-mode .container p,
+        .cuisine-style .container h1,
+        .cuisine-style .container p,
+        .funky-style .container {
+            color: #4caf50;
+        }
+
+        .funky-style {
+            background-color: #ff00ff;
+            color: #00ff00;
+        }
+
+        .funky-style .options-panel {
+            background-color: #ffff00;
+            color: #0000ff;
+        }
+
+        .funky-style .container {
+            background-color: #ff82a9;
+        }
+
+        .random-button {
+            margin-top: 10px;
+        }
+
+        .temperature-label {
+            color: #333;
+        }
+		
+		/* Styles pour la police Arial */
+		.font-size {
+			font-size: 18px;
 		}
 
     </style>
 </head>
 
-<body>
+<body class="font-size">
     <div class="container temperature-value">
         <h1 class="txt-green">Contrôle de la Mijoteuse</h1>
         <div class="temperature-info">
-			<p><span class="temperature-label">🌡️ Température actuelle:</span> <span id="currentTemperature"></span> °C</p>
-			<p><span class="temperature-label">⬇️ Température minimale (2 dernières minutes):</span> <span id="minTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label">⬆️ Température maximale (2 dernières minutes):</span> <span id="maxTemp2Minutes"></span> °C</p>
-			<p><span class="temperature-label">⬇️ Température minimale (5 dernières minutes):</span> <span id="minTemp5Minutes"></span> °C</p>
-			<p><span class="temperature-label">⬆️ Température maximale (5 dernières minutes):</span> <span id="maxTemp5Minutes"></span> °C</p>
-			<p><span class="temperature-label">🕓 Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span></p>
-		</div>
-        <div class="duration-info">Temps de fonctionnement sans interruption: <span id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
+            <p><span class="temperature-label">🌡️ Température actuelle:</span> <span id="currentTemperature"></span> °C</p>
+            <p><span class="temperature-label">⬇️ Température minimale (2 dernières minutes):</span> <span
+                    id="minTemp2Minutes"></span> °C</p>
+            <p><span class="temperature-label">⬆️ Température maximale (2 dernières minutes):</span> <span
+                    id="maxTemp2Minutes"></span> °C</p>
+            <p><span class="temperature-label">⬇️ Température minimale (5 dernières minutes):</span> <span
+                    id="minTemp5Minutes"></span> °C</p>
+            <p><span class="temperature-label">⬆️ Température maximale (5 dernières minutes):</span> <span
+                    id="maxTemp5Minutes"></span> °C</p>
+            <p><span class="temperature-label">🕓 Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span>
+            </p>
+        </div>
+        <div class="duration-info">Temps de fonctionnement sans interruption: <span
+                id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
         <div class="heating-intensity-bar">
             <div class="heating-intensity-fill" id="heatingIntensityBar"></div>
         </div>
 
-
-	<div class="button-container temperature-value">
-		<button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
-		<button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
-	</div>
-	<div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
-		<div class="option-label">Taille du texte</div>
-		<div class="option-slider">
-			<input type="range" min="12" max="28" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
-		</div>
-		<div class="option-label">Police d'écriture</div>
-		<select id="fontSelect" class="option-font-select" onchange="changeFont(this.value)">
-			<option value="Arial, sans-serif">Arial</option>
-			<option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-			<option value="'Courier New', monospace">Courier New</option>
-			<option value="'Pacifico', cursive">Pacifico</option>
-			<option value="''Cookie', cursive">Cookie</option>
-		</select>
-	</div>
+        <div class="button-container temperature-value">
+            <button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
+            <button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
+        </div>
+        <div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
+            <div class="option-label">Taille du texte</div>
+            <div class="option-slider">
+                <input type="range" min="12" max="28" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
+            </div>
+            <div class="option-label">Police d'écriture</div>
+            <select id="fontSelect" class="option-font-select" onchange="changeFont(this.value)">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="'Pacifico', cursive">Pacifico</option>
+                <option value="'Cookie', cursive">Cookie</option>
+            </select>
+            <div class="option-label">Choisir le style :</div>
+            <select id="styleSelect" class="option-font-select" onchange="changePageStyle(this.value)">
+                <option value="normal">Normal (Giga blanc)</option>
+                <option value="dark-mode">Dark Mode</option>
+                <option value="cuisine-style">Cuisine Style</option>
+                <option value="funky-style">Funky Style</option>
+            </select>
+            <button id="randomizeButton" class="options-button random-button" onclick="randomizeColors()">🎲</button>
+        </div>
 
     </div>
 
@@ -203,10 +304,10 @@
     function updateHeatingStateUI() {
         var button = document.getElementById('toggleButton');
         if (heatingState) {
-            button.textContent = 'Désactiver Chauffage';
+            button.textContent = 'Désactiver Chauffage 🔥';
             button.style.backgroundColor = '#4caf50'; 
         } else {
-            button.textContent = 'Activer Chauffage';
+            button.textContent = 'Activer Chauffage 🥶';
             button.style.backgroundColor = '#f44336';
         }
     }
@@ -279,8 +380,11 @@
 	}
 
 	function changeTextSize(value) {
-		var temperatureValues = document.querySelectorAll('.temperature-value');
-		temperatureValues.forEach(function (element) {
+		// Sélectionnez tous les éléments de texte sur la page
+		var textElements = document.querySelectorAll('.temperature-value, .option-label, .options-button, .options-panel select, .option-slider input, .options-panel button, .temperature-label');
+
+		// Parcourez tous les éléments de texte et modifiez leur taille de police
+		textElements.forEach(function (element) {
 			element.style.fontSize = value + 'px';
 		});
 	}
@@ -292,6 +396,58 @@
 		});
 	}
 
+	function changePageStyle(style) {
+		resetStyles(); // Réinitialise les styles
+		document.body.className = style;
+	}
+
+	function randomizeColors() {
+		var colors = [
+			'#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#F39C12', '#16A085', '#2980B9', '#C0392B', '#8E44AD', '#F1C40F', '#27AE60', '#2980B9', '#D35400', '#3498DB', '#E67E22', '#1ABC9C', '#E74C3C', '#9B59B6', '#F39C12', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6','#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6','#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB'];
+
+		var randomColorIndex = Math.floor(Math.random() * colors.length);
+		
+		document.body.style.backgroundColor = colors[randomColorIndex];
+		document.body.style.color = colors[(randomColorIndex + 1) % colors.length];
+		document.querySelector('.container').style.backgroundColor = colors[(randomColorIndex + 2) % colors.length];
+		document.querySelector('.container h1').style.color = colors[(randomColorIndex + 3) % colors.length];
+		document.querySelectorAll('.button-container button').forEach(function(element) {
+			element.style.backgroundColor = colors[(randomColorIndex + 4) % colors.length];
+			element.style.color = colors[(randomColorIndex + 5) % colors.length];
+		});
+		document.querySelectorAll('.temperature-label').forEach(function(element) {
+			element.style.color = colors[(randomColorIndex + 6) % colors.length];
+		});
+		document.querySelector('.options-panel').style.backgroundColor = colors[(randomColorIndex + 7) % colors.length];
+		document.querySelector('.options-panel').style.color = colors[(randomColorIndex + 8) % colors.length];
+		document.querySelectorAll('.options-panel select, .option-slider input, .options-panel button').forEach(function(element) {
+			element.style.borderColor = colors[(randomColorIndex + 9) % colors.length];
+			element.style.backgroundColor = colors[(randomColorIndex + 10) % colors.length];
+			element.style.color = colors[(randomColorIndex + 11) % colors.length];
+		});
+	}
+
+	function resetStyles() {
+		document.body.style.backgroundColor = '#f2f2f2';
+		document.body.style.color = '#333';
+		document.querySelector('.container').style.backgroundColor = '#ffffff';
+		document.querySelector('.container h1').style.color = '#4caf50';
+		document.querySelectorAll('.button-container button').forEach(function(element) {
+			element.style.backgroundColor = '#f44336';
+			element.style.color = 'white';
+		});
+		document.querySelectorAll('.temperature-label').forEach(function(element) {
+			element.style.color = '#333';
+		});
+		document.querySelector('.options-panel').style.backgroundColor = '#fff';
+		document.querySelector('.options-panel').style.color = '#333';
+		document.querySelectorAll('.options-panel select, .option-slider input, .options-panel button, option-label').forEach(function(element) {
+			element.style.borderColor = '#ccc';
+			element.style.backgroundColor = '#fff';
+			element.style.color = '#333';
+		});
+	}
+	
     // Appelle de fonction au chargement de la page pour mettre à jour l'interface utilisateur
     // Dois être appeler a des intervalle réguliers 
 	getTemperature();
