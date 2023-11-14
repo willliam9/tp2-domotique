@@ -94,6 +94,13 @@ void handleTemperatureMax5MRequest() {
   String stateParam = httpd.arg("state");
 }
 
+void handleTemperatureStableRequest() {
+  String jsonResponse = "{\"temperatureStable\": " + String(tempsTemperatureStable) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
+
+
 void HandleFileRequest(){
   String fileName = httpd.uri();
   Serial.println(fileName); // 
@@ -116,7 +123,7 @@ void setup() {
 
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TP2-W", "motdepasse");
+  WiFi.softAP("TP2-O", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
@@ -127,9 +134,14 @@ void setup() {
   httpd.on("/temperaturemax2m", HTTP_GET, handleTemperatureMax2MRequest);
   httpd.on("/temperaturemin5m", HTTP_GET, handleTemperatureMin5MRequest);
   httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
+  httpd.on("/temperatureStable", HTTP_GET, handleTemperatureStableRequest);
+
   httpd.begin();
 
 }
+
+
+
 
 void CalculerTempsTemperatureStable(){
     unsigned int secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
@@ -164,10 +176,7 @@ void loop() {
     CalculerTemperature();
   }
 
-  if(arretTotal == true){
-    
-  }
-  else if(temperatureCourante >= 50){
+   if(temperatureCourante >= 50 && !arretTotal){
     arretTotal = true;
     digitalWrite(relais, LOW);
   }

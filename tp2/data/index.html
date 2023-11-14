@@ -354,7 +354,7 @@
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
 				var minTemp2Minutes = response.temperature;
-				document.getElementById('minTemp2Minutes').textContent = currentTemperature + " °C";
+				document.getElementById('minTemp2Minutes').textContent = minTemp2Minutes + " °C";
 			}
 		};
 		xhr.send();
@@ -366,8 +366,8 @@
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
-				var minTemp2Minutes = response.temperature;
-				document.getElementById('maxTemp2Minutes').textContent = currentTemperature + " °C";
+				var maxTemp2Minutes = response.temperature;
+				document.getElementById('maxTemp2Minutes').textContent = maxTemp2Minutes + " °C";
 			}
 		};
 		xhr.send();
@@ -379,8 +379,8 @@
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
-				var maxTemp2Minutes = response.temperature;
-				document.getElementById('minTemp5Minutes').textContent = maxTemp2Minutes + " °C";
+				var minTemp5Minutes = response.temperature;
+				document.getElementById('minTemp5Minutes').textContent = minTemp5Minutes + " °C";
 			}
 		};
 		xhr.send();
@@ -392,13 +392,26 @@
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
-				var maxTemp2Minutes = response.temperature;
-				document.getElementById('maxTemp5Minutes').textContent = maxTemp2Minutes + " °C";
+				var maxTemp5Minutes = response.temperature;
+				document.getElementById('maxTemp5Minutes').textContent = maxTemp5Minutes + " °C";
 			}
 		};
 		xhr.send();
 	}
 	
+    
+    function getTemperatureStable() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/temperatureStable', true);
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				var TemperatureStable = response.temperature;
+				document.getElementById('temperatureDuration').textContent = TemperatureStable + " °C";
+			}
+		};
+		xhr.send();
+	}
 
 	function toggleOptionsPanel() {
 		var optionsPanel = document.getElementById('optionsPanel');
@@ -483,6 +496,7 @@
     getTemperatureMax5M();
 	updateHeatingIntensityUI();
     updateHeatingStateUI();
+    getTemperatureStable();
     </script>
 </body>
 
