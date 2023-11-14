@@ -9,6 +9,7 @@ const int relais = D1;
 double temperatureCourante;
 
 String tempsTemperatureStable = "";
+float secondeTemperatureStable = 0;
 
 int max2Minutes = 0;
 int min2Minutes = 0;
@@ -67,37 +68,37 @@ void toggleHeatingState() {
 void handleTemperatureRequest() {
   String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+
 }
 
 void handleTemperatureMin2MRequest() {
   String jsonResponse = "{\"temperaturemin2m\": " + String(min2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+
 }
 
 void handleTemperatureMax2MRequest() {
   String jsonResponse = "{\"temperaturemax2m\": " + String(max2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+ 
 }
 
 void handleTemperatureMin5MRequest() {
   String jsonResponse = "{\"temperaturemin5m\": " + String(min2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+
 }
 
 void handleTemperatureMax5MRequest() {
   String jsonResponse = "{\"temperaturemax5m\": " + String(max2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+
 }
 
 void handleTemperatureStableRequest() {
-  String jsonResponse = "{\"temperatureStable\": " + String(tempsTemperatureStable) + "}";
+  String jsonResponse = "{\"secondeTemperatureStable\": " + String(secondeTemperatureStable) + "}";
   httpd.send(200, "application/json", jsonResponse);
-  String stateParam = httpd.arg("state");
+
 }
 
 
@@ -134,7 +135,7 @@ void setup() {
   httpd.on("/temperaturemax2m", HTTP_GET, handleTemperatureMax2MRequest);
   httpd.on("/temperaturemin5m", HTTP_GET, handleTemperatureMin5MRequest);
   httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
-  httpd.on("/temperatureStable", HTTP_GET, handleTemperatureStableRequest);
+  httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
 
   httpd.begin();
 
@@ -146,15 +147,7 @@ void setup() {
 void CalculerTempsTemperatureStable(){
     unsigned int secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
   	
-    unsigned int minutes = secondes / 60;
-    
-    unsigned int heures = minutes / 60;
-  	  
-    heures %= 24;
-  	minutes %= 60;
-    secondes %= 60;
-
-    tempsTemperatureStable = String(heures) + ":" + String(minutes) + ":" + String(secondes);
+    secondeTemperatureStable = secondes;
 }
 
 void CalculerTemperature(){

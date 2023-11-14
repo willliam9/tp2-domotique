@@ -288,6 +288,7 @@
     </div>
 
     <script>
+
 	var heatingState = false; // État initial du chauffage (éteint)
 	var currentTemperature = 10;
     function toggleHeating() {
@@ -341,7 +342,7 @@
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
 				currentTemperature = response.temperature;
-				document.getElementById('currentTemperature').textContent = currentTemperature + " °C";
+				document.getElementById('currentTemperature').textContent = currentTemperature ;
 			}
 		};
 		xhr.send();
@@ -354,7 +355,7 @@
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
 				var minTemp2Minutes = response.temperature;
-				document.getElementById('minTemp2Minutes').textContent = minTemp2Minutes + " °C";
+				document.getElementById('minTemp2Minutes').textContent = minTemp2Minutes ;
 			}
 		};
 		xhr.send();
@@ -402,16 +403,25 @@
     
     function getTemperatureStable() {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', '/temperatureStable', true);
+		xhr.open('GET', '/secondeTemperatureStable', true);
 		xhr.onload = function() {
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
-				var TemperatureStable = response.temperature;
-				document.getElementById('temperatureDuration').textContent = TemperatureStable + " °C";
+				var heures = parseFloat(response.temperature)/3600;
+                var minutes = parseFloat(response.temperature)/60;
+                var secondes = parseFloat(response.temperature);
+                heures %= 24;
+                minutes %=60;
+                secondes %=60;
+
+				document.getElementById('temperatureDuration').textContent = heures +":" + minutes + ":" + secondes;
 			}
 		};
 		xhr.send();
 	}
+
+
+    
 
 	function toggleOptionsPanel() {
 		var optionsPanel = document.getElementById('optionsPanel');
@@ -494,9 +504,9 @@
     getTemperatureMax2M();
     getTemperatureMin5M();
     getTemperatureMax5M();
+    getTemperatureStable();
 	updateHeatingIntensityUI();
     updateHeatingStateUI();
-    getTemperatureStable();
     </script>
 </body>
 
