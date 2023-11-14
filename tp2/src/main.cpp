@@ -69,37 +69,37 @@ void toggleHeatingState() {
 void handleTemperatureRequest() {
   String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
   httpd.send(200, "application/json", jsonResponse);
-
+  String stateParam = httpd.arg("state");
 }
 
 void handleTemperatureMin2MRequest() {
   String jsonResponse = "{\"temperaturemin2m\": " + String(min2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-
+  String stateParam = httpd.arg("state");
 }
 
 void handleTemperatureMax2MRequest() {
   String jsonResponse = "{\"temperaturemax2m\": " + String(max2Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
- 
+  String stateParam = httpd.arg("state");
 }
 
 void handleTemperatureMin5MRequest() {
-  String jsonResponse = "{\"temperaturemin5m\": " + String(min2Minutes) + "}";
+  String jsonResponse = "{\"temperaturemin5m\": " + String(min5Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-
+  String stateParam = httpd.arg("state");
 }
 
 void handleTemperatureMax5MRequest() {
-  String jsonResponse = "{\"temperaturemax5m\": " + String(max2Minutes) + "}";
+  String jsonResponse = "{\"temperaturemax5m\": " + String(max5Minutes) + "}";
   httpd.send(200, "application/json", jsonResponse);
-
+  String stateParam = httpd.arg("state");
 }
 
 void handleTemperatureStableRequest() {
   String jsonResponse = "{\"secondeTemperatureStable\": " + String(secondeTemperatureStable) + "}";
   httpd.send(200, "application/json", jsonResponse);
-
+  String stateParam = httpd.arg("state");
 }
 
 
@@ -146,7 +146,7 @@ void setup() {
 
 
 void CalculerTempsTemperatureStable(){
-    unsigned int secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
+    float secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
   	
     secondeTemperatureStable = secondes;
 }
@@ -163,19 +163,20 @@ void CalculerTemperature(){
 
 void loop() {
   httpd.handleClient();
-
+  temperatureCourante = 43;
   if( millis() % 50 != 0 )
        return;
   else {
-    CalculerTemperature();
+    //CalculerTemperature();
+  }
+
+  if(temperatureCourante <= 43){
+    arretTotal = false;
   }
 
   if(temperatureCourante >= 50 && !arretTotal){
     arretTotal = true;
     digitalWrite(relais, LOW);
-  }
-  else if(temperatureCourante <= 43){
-    arretTotal = false;
   }
   else{
     
@@ -187,10 +188,11 @@ void loop() {
       tempsAvantTemperatureStable = millis();
     }
 
-
+    minActuel = minActuel = 0 ? temperatureCourante : minActuel;
     if(minActuel > temperatureCourante)
       minActuel = temperatureCourante;
 
+    maxActuel = maxActuel = 0 ? temperatureCourante : maxActuel;
     if(maxActuel < temperatureCourante)
       maxActuel = temperatureCourante;
 
