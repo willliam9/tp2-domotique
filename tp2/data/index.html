@@ -252,13 +252,13 @@
             <p><span class="temperature-label">🕓 Temps entre 41 et 45°C:</span> <span id="temperatureDuration"></span>
             </p>
         </div>
-        <div class="duration-info">Temps de fonctionnement sans interruption: <span
+        <div class="duration-info temperature-label">Temps de fonctionnement sans interruption: <span
                 id="uptimeDuration">0 heures, 0 minutes, 0 secondes</span></div>
         <div class="heating-intensity-bar">
             <div class="heating-intensity-fill" id="heatingIntensityBar"></div>
         </div>
 
-        <div class="button-container temperature-value">
+        <div class="button-container temperature-value temperature-label">
             <button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
             <button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
         </div>
@@ -439,7 +439,7 @@
 	}
 
 	function changeFont(font) {
-		var temperatureValues = document.querySelectorAll('.temperature-value');
+		var temperatureValues = document.querySelectorAll('.temperature-value .temperature-label');
 		temperatureValues.forEach(function (element) {
 			element.style.fontFamily = font;
 		});

@@ -11,11 +11,11 @@ double temperatureCourante;
 String tempsTemperatureStable = "";
 float secondeTemperatureStable = 0;
 
-int max2Minutes = 0;
-int min2Minutes = 0;
+double max2Minutes = 0;
+double min2Minutes = 0;
 
-int max5Minutes = 0;
-int min5Minutes = 0;
+double max5Minutes = 0;
+double min5Minutes = 0;
 
 int maxActuel = 0;
 int minActuel = 0;
@@ -27,8 +27,9 @@ unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
 
-int delaisTemp = 1000;
-unsigned long dernierMillisTemp;
+//Pas certain que ce soit utile.
+//int delaisTemp = 1000;
+//unsigned long dernierMillisTemp;
 
 ESP8266WebServer httpd(80);
 
@@ -169,9 +170,12 @@ void loop() {
     CalculerTemperature();
   }
 
-   if(temperatureCourante >= 50 && !arretTotal){
+  if(temperatureCourante >= 50 && !arretTotal){
     arretTotal = true;
     digitalWrite(relais, LOW);
+  }
+  else if(temperatureCourante <= 43){
+    arretTotal = false;
   }
   else{
     
@@ -179,7 +183,7 @@ void loop() {
       CalculerTempsTemperatureStable();
     }
     else{
-      tempsTemperatureStable = "";
+      tempsTemperatureStable = "00:00:00";
       tempsAvantTemperatureStable = millis();
     }
 
@@ -203,8 +207,6 @@ void loop() {
       min5Minutes = minActuel;
       max5Minutes = maxActuel;
     }
-
-    //httpd.handleClient();
   }
 }
 
