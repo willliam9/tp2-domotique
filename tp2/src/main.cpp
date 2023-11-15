@@ -2,11 +2,22 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <LittleFS.h>
+#include <PID_v1.h>
+
 
 const int thermometre = A0;
 const int relais = D1;
-
 double temperatureCourante;
+
+// set PID 
+//---------------------------------
+double Setpoint, Input, Output;
+double Kp=2, Ki=5, Kd=1;
+
+int WindowSizeOn = 300;
+int windowStartOff = 700;
+unsigned long windowStartTime;
+//---------------------------------
 
 String tempsTemperatureStable = "";
 float secondeTemperatureStable = 0;
@@ -18,14 +29,19 @@ double max5Minutes = 0;
 double min5Minutes = 0;
 
 int maxActuel = 0;
-int minActuel = 0;
+int minActuel = 100;
 
-bool arretTotal = false;
+
+bool chaud = false;
 bool allumer = false;
 
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
+
+
+
+PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 //Pas certain que ce soit utile.
 //int delaisTemp = 1000;
@@ -125,7 +141,7 @@ void setup() {
 
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TP2-O", "motdepasse");
+  WiFi.softAP("TP2-Stan", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
@@ -139,6 +155,15 @@ void setup() {
   httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
 
   httpd.begin();
+
+
+// PID 
+//---------------------------------
+  windowStartTime = millis();
+  Setpoint = 43;
+  tempPID.SetOutputLimits(WindowSizeOn,windowStartOff);
+  tempPID.SetMode(AUTOMATIC);
+//---------------------------------
 
 }
 
@@ -161,8 +186,24 @@ void CalculerTemperature(){
   temperatureCourante = tempKelvin - 273.15;
 }
 
+void MaintienTemperature(){
+
+ Input = temperatureCourante;
+  tempPID.Compute();
+
+  if (millis() - windowStartTime > WindowSizeOn)
+  { //time to shift the Relay Window
+    windowStartTime += WindowSizeOn;
+  }
+  if (Output < millis() - windowStartTime) digitalWrite(relais, HIGH);
+  else digitalWrite(relais, LOW);
+
+
+}
+
 void loop() {
   httpd.handleClient();
+  if(temperatureCourante != 20)
   temperatureCourante = 43;
   if( millis() % 50 != 0 )
        return;
@@ -170,12 +211,12 @@ void loop() {
     //CalculerTemperature();
   }
 
-  if(temperatureCourante <= 43){
-    arretTotal = false;
+  if(temperatureCourante <= 43 && allumer){
+    chaud = true;
   }
 
-  if(temperatureCourante >= 50 && !arretTotal){
-    arretTotal = true;
+  if(temperatureCourante >= 50 && allumer){
+    chaud = false;
     digitalWrite(relais, LOW);
   }
   else{
@@ -184,31 +225,30 @@ void loop() {
       CalculerTempsTemperatureStable();
     }
     else{
-      tempsTemperatureStable = "00:00:00";
+      secondeTemperatureStable = 0;
       tempsAvantTemperatureStable = millis();
     }
 
-    minActuel = minActuel = 0 ? temperatureCourante : minActuel;
     if(minActuel > temperatureCourante)
       minActuel = temperatureCourante;
 
-    maxActuel = maxActuel = 0 ? temperatureCourante : maxActuel;
     if(maxActuel < temperatureCourante)
       maxActuel = temperatureCourante;
 
-    if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 > 2)
+    if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 >= 2)
     {
       tempsEcoule2DernieresMinutes = millis();
       min2Minutes = minActuel;
       max2Minutes = maxActuel;
+      temperatureCourante = 20;
     }
 
-    if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 > 5)
+    if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 >= 5)
     {
       tempsEcoule5DernieresMinutes = millis();
       min5Minutes = minActuel;
       max5Minutes = maxActuel;
-    }
+    }    
   }
 }
 
