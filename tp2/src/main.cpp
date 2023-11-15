@@ -18,7 +18,7 @@ double max5Minutes = 0;
 double min5Minutes = 0;
 
 int maxActuel = 0;
-int minActuel = 0;
+int minActuel = 100;
 
 bool arretTotal = false;
 bool allumer = false;
@@ -163,6 +163,7 @@ void CalculerTemperature(){
 
 void loop() {
   httpd.handleClient();
+  if(temperatureCourante != 20)
   temperatureCourante = 43;
   if( millis() % 50 != 0 )
        return;
@@ -184,31 +185,30 @@ void loop() {
       CalculerTempsTemperatureStable();
     }
     else{
-      tempsTemperatureStable = "00:00:00";
+      secondeTemperatureStable = 0;
       tempsAvantTemperatureStable = millis();
     }
 
-    minActuel = minActuel = 0 ? temperatureCourante : minActuel;
     if(minActuel > temperatureCourante)
       minActuel = temperatureCourante;
 
-    maxActuel = maxActuel = 0 ? temperatureCourante : maxActuel;
     if(maxActuel < temperatureCourante)
       maxActuel = temperatureCourante;
 
-    if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 > 2)
+    if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 >= 2)
     {
       tempsEcoule2DernieresMinutes = millis();
       min2Minutes = minActuel;
       max2Minutes = maxActuel;
+      temperatureCourante = 20;
     }
 
-    if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 > 5)
+    if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 >= 5)
     {
       tempsEcoule5DernieresMinutes = millis();
       min5Minutes = minActuel;
       max5Minutes = maxActuel;
-    }
+    }    
   }
 }
 
