@@ -38,18 +38,21 @@
         h1 {
             margin-bottom: 20px;
             font-size: 24px;
-            color: #4caf50;
         }
 
         .temperature-info,
         .duration-info {
             margin: 20px 0;
-            font-size: 16px;
             color: #333;
         }
 
         .txt-green {
+            color:#4caf50;
+        }
+		
+		 .txt-fms {
             color: #4caf50;
+			font-family: 'Cookie', cursive;
         }
 
         .heating-intensity-bar {
@@ -79,7 +82,6 @@
         .button-container button {
             margin: 0 10px;
             padding: 12px 24px;
-            font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
@@ -136,7 +138,6 @@
 		.options-panel button {
 			width: calc(100% - 20px);
 			padding: 8px;
-			font-size: 16px;
 			border-radius: 5px;
 			border: 1px solid #ccc;
 			margin-bottom: 20px;
@@ -153,7 +154,6 @@
 		
 		.options-toggle-button {
 			cursor: pointer;
-			font-size: 24px;
 			margin-bottom: 10px;
 		}
 		
@@ -227,16 +227,11 @@
         .temperature-label {
             color: #333;
         }
-		
-		/* Styles pour la police Arial */
-		.font-size {
-			font-size: 18px;
-		}
 
     </style>
 </head>
 
-<body class="font-size">
+<body class="txt-fms">
     <div class="container temperature-value">
         <h1 class="txt-green">Contrôle de la Mijoteuse</h1>
         <div class="">
@@ -265,7 +260,7 @@
         <div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
             <div class="option-label">Taille du texte</div>
             <div class="option-slider">
-                <input type="range" min="12" max="28" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
+                <input type="range" min="4" max="28" value="18" id="textSizeSlider" onchange="changeTextSize(this.value)">
             </div>
             <div class="option-label">Police d'écriture</div>
             <select id="fontSelect" class="option-font-select" onchange="changeFont(this.value)">
@@ -427,16 +422,25 @@
 
 	function changeTextSize(value) {
 		// Sélectionnez tous les éléments de texte sur la page
-		var textElements = document.querySelectorAll('.temperature-value, .option-label, .options-button, .options-panel select, .option-slider input, .options-panel button, .temperature-label');
+		var textElements = document.querySelectorAll('.txt-fms');
 
 		// Parcourez tous les éléments de texte et modifiez leur taille de police
 		textElements.forEach(function (element) {
 			element.style.fontSize = value + 'px';
 		});
+		
+		// .heating-intensity-bar
+		var textElements2 = document.querySelectorAll('.heating-intensity-bar .option-font-select .options-panel');
+
+		// Parcourez tous les éléments de texte et modifiez leur taille de police
+		textElements2.forEach(function (element) {
+			element.style.height = value + 'px';
+		});
+		
 	}
 
 	function changeFont(font) {
-		var temperatureValues = document.querySelectorAll('.temperature-value .temperature-label');
+		var temperatureValues = document.querySelectorAll('.txt-fms');
 		temperatureValues.forEach(function (element) {
 			element.style.fontFamily = font;
 		});
@@ -466,7 +470,7 @@
 		});
 		document.querySelector('.options-panel').style.backgroundColor = colors[(randomColorIndex + 7) % colors.length];
 		document.querySelector('.options-panel').style.color = colors[(randomColorIndex + 8) % colors.length];
-		document.querySelectorAll('.options-panel select, .option-slider input, .options-panel button').forEach(function(element) {
+		document.querySelectorAll('.options-panel select, .option-slider input, .options-panel button, .option-label').forEach(function(element) {
 			element.style.borderColor = colors[(randomColorIndex + 9) % colors.length];
 			element.style.backgroundColor = colors[(randomColorIndex + 10) % colors.length];
 			element.style.color = colors[(randomColorIndex + 11) % colors.length];
