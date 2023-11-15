@@ -125,7 +125,7 @@ void setup() {
 
   Serial.println("Creation de l'AP");
               
-  WiFi.softAP("TP2-O", "motdepasse");
+  WiFi.softAP("TP2-Stan", "motdepasse");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();

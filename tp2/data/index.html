@@ -404,12 +404,12 @@
 			if (xhr.status === 200) {
 				var response = JSON.parse(xhr.responseText);
                 var secondes = parseFloat(response.secondeTemperatureStable);
-                var minutes = secondes/60;
-				var heures = minutes/60;
+                var minutes = parseInt(secondes/60);
+				var heures = parseInt(minutes/60);
                 
                 heures %= 24;
-                minutes %=60;
-                secondes %=60;
+                minutes %= 60;
+                secondes %= 60;
 
 				document.getElementById('temperatureDuration').textContent = heures +":" + minutes + ":" + secondes;
 			}
