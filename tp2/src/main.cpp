@@ -17,9 +17,9 @@ double Kp=2, Ki=5, Kd=1;
 int WindowSizeOn = 300;
 int windowStartOff = 700;
 unsigned long windowStartTime;
+PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
 
-String tempsTemperatureStable = "";
 float secondeTemperatureStable = 0;
 
 double max2Minutes = 0;
@@ -38,14 +38,6 @@ bool allumer = false;
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
-
-
-
-PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-
-//Pas certain que ce soit utile.
-//int delaisTemp = 1000;
-//unsigned long dernierMillisTemp;
 
 ESP8266WebServer httpd(80);
 
@@ -121,7 +113,7 @@ void handleTemperatureStableRequest() {
 
 void HandleFileRequest(){
   String fileName = httpd.uri();
-  Serial.println(fileName); // 
+  Serial.println(fileName);
   if(fileName.endsWith("/"))
     fileName = "index.html";
   if(LittleFS.exists(fileName)){
@@ -167,9 +159,6 @@ void setup() {
 
 }
 
-
-
-
 void CalculerTempsTemperatureStable(){
     float secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
   	
@@ -188,7 +177,7 @@ void CalculerTemperature(){
 
 void MaintienTemperature(){
 
- Input = temperatureCourante;
+  Input = temperatureCourante;
   tempPID.Compute();
 
   if (millis() - windowStartTime > WindowSizeOn)
@@ -203,12 +192,13 @@ void MaintienTemperature(){
 
 void loop() {
   httpd.handleClient();
-  if(temperatureCourante != 20)
-  temperatureCourante = 43;
+  
   if( millis() % 50 != 0 )
        return;
   else {
-    //CalculerTemperature();
+    CalculerTemperature();
+    if(allumer)
+    MaintienTemperature();
   }
 
   if(temperatureCourante <= 43 && allumer){
