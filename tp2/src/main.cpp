@@ -2,11 +2,22 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <LittleFS.h>
+#include <PID_v1.h>
+
 
 const int thermometre = A0;
 const int relais = D1;
-
 double temperatureCourante;
+
+// set PID 
+//---------------------------------
+double Setpoint, Input, Output;
+double Kp=2, Ki=5, Kd=1;
+
+int WindowSizeOn = 300;
+int windowStartOff = 700;
+unsigned long windowStartTime;
+//---------------------------------
 
 String tempsTemperatureStable = "";
 float secondeTemperatureStable = 0;
@@ -20,12 +31,17 @@ double min5Minutes = 0;
 int maxActuel = 0;
 int minActuel = 100;
 
-bool arretTotal = false;
+
+bool chaud = false;
 bool allumer = false;
 
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
+
+
+
+PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 //Pas certain que ce soit utile.
 //int delaisTemp = 1000;
@@ -140,6 +156,15 @@ void setup() {
 
   httpd.begin();
 
+
+// PID 
+//---------------------------------
+  windowStartTime = millis();
+  Setpoint = 43;
+  tempPID.SetOutputLimits(WindowSizeOn,windowStartOff);
+  tempPID.SetMode(AUTOMATIC);
+//---------------------------------
+
 }
 
 
@@ -161,6 +186,21 @@ void CalculerTemperature(){
   temperatureCourante = tempKelvin - 273.15;
 }
 
+void MaintienTemperature(){
+
+ Input = temperatureCourante;
+  tempPID.Compute();
+
+  if (millis() - windowStartTime > WindowSizeOn)
+  { //time to shift the Relay Window
+    windowStartTime += WindowSizeOn;
+  }
+  if (Output < millis() - windowStartTime) digitalWrite(relais, HIGH);
+  else digitalWrite(relais, LOW);
+
+
+}
+
 void loop() {
   httpd.handleClient();
   if(temperatureCourante != 20)
@@ -171,12 +211,12 @@ void loop() {
     //CalculerTemperature();
   }
 
-  if(temperatureCourante <= 43){
-    arretTotal = false;
+  if(temperatureCourante <= 43 && allumer){
+    chaud = true;
   }
 
-  if(temperatureCourante >= 50 && !arretTotal){
-    arretTotal = true;
+  if(temperatureCourante >= 50 && allumer){
+    chaud = false;
     digitalWrite(relais, LOW);
   }
   else{
