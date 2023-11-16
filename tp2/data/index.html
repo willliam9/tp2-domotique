@@ -227,6 +227,35 @@
         .temperature-label {
             color: #333;
         }
+		
+		/* Style pour le tooltip */
+		.tooltip {
+		  position: relative;
+		  display: inline-block;
+		  cursor: pointer;
+		}
+
+		.tooltip .tooltiptext {
+		  visibility: hidden;
+		  width: 120px;
+		  background-color: #333;
+		  color: #fff;
+		  text-align: center;
+		  border-radius: 6px;
+		  padding: 5px;
+		  position: absolute;
+		  z-index: 1;
+		  bottom: 125%; /* Positionne le tooltip au-dessus de l'élément */
+		  left: 50%;
+		  margin-left: -60px; /* Centre le tooltip par rapport à l'élément */
+		  opacity: 0;
+		  transition: opacity 0.3s;
+		}
+
+		.tooltip:hover .tooltiptext {
+		  visibility: visible;
+		  opacity: 1;
+		}
 
     </style>
 </head>
@@ -254,7 +283,10 @@
 
         <div class="button-container temperature-value temperature-label">
             <button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
-            <button id="toggleButtonMode" class="options-button" onclick="toggleModeAuto()">Auto</button>
+			<div class="tooltip">
+				<button id="toggleButtonMode" class="options-button" onclick="toggleModeAuto()">Auto</button>
+				<span class="tooltiptext">Ce bouton sert a désactivé la cuisson automatique</span>
+			</div>
             <button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
         </div>
         <div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
@@ -335,7 +367,7 @@
 		intensityBar.style.width = heatingIntensity / currentTemperature + '%';
 	}
 
-	//Mettre à jour l'intensité de chauffage toutes les 2 secondes. Pour tester
+	//Mettre à jour les données à toutes les 1 secondes. Exemple : température actuelle
 	setInterval(function() {
 		heatingIntensity = currentTemperature / heatingIntensity * 100; //Math.floor(Math.random() * 100);
 		updateHeatingIntensityUI();
@@ -366,7 +398,7 @@
 		xhr.open('GET', '/temperaturemin2m', true);
 		xhr.onload = function() {
 			if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
+				var response = JSON.parse(xhr.responseText);
 				var minTemp2Minutes = response.temperaturemin2m;
 				document.getElementById('minTemp2Minutes').textContent = minTemp2Minutes ;
 			}
@@ -464,10 +496,8 @@
 			element.style.fontSize = value + 'px';
 		});
 		
-		// .heating-intensity-bar
 		var textElements2 = document.querySelectorAll('.heating-intensity-bar .option-font-select .options-panel');
 
-		// Parcourez tous les éléments de texte et modifiez leur taille de police
 		textElements2.forEach(function (element) {
 			element.style.height = value + 'px';
 		});
@@ -488,7 +518,7 @@
 
 	function randomizeColors() {
 		var colors = [
-			'#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#F39C12', '#16A085', '#2980B9', '#C0392B', '#8E44AD', '#F1C40F', '#27AE60', '#2980B9', '#D35400', '#3498DB', '#E67E22', '#1ABC9C', '#E74C3C', '#9B59B6', '#F39C12', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6','#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6','#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733', '#FFC300', '#36D7B7', '#3498DB'];
+			'#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#F39C12', '#16A085', '#2980B9', '#C0392B', '#8E44AD', '#F1C40F', '#27AE60', '#2980B9', '#D35400', '#3498DB', '#E67E22', '#1ABC9C', '#E74C3C', '#9B59B6', '#F39C12', '#FF5733', '#FFC300', '#36D7B7', '#3498DB', '#9B59B6', '#E74C3C', '#2ECC71', '#FF5733'];
 
 		var randomColorIndex = Math.floor(Math.random() * colors.length);
 		
@@ -534,7 +564,6 @@
 	}
 	
     // Appelle de fonction au chargement de la page pour mettre à jour l'interface utilisateur
-    // Dois être appeler a des intervalle réguliers 
 	getTemperature();
     getTemperatureMin2M();
     getTemperatureMax2M();
