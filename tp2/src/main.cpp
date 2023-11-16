@@ -15,7 +15,6 @@ double Setpoint, Input, Output;
 double Kp=2, Ki=5, Kd=1;
 
 int WindowSizeOn = 300;
-int windowStartOff = 700;
 unsigned long windowStartTime;
 //---------------------------------
 
@@ -34,6 +33,7 @@ int minActuel = 100;
 
 bool chaud = false;
 bool allumer = false;
+bool modeAuto = true; // Est-ce que le crockpot peut s'éteindre et s'allumer par lui même. // Est-ce que la méthode MaintienTemperature() peut de faire appeler 
 
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
@@ -82,6 +82,19 @@ void toggleHeatingState() {
   }
 }
 
+void toggleModeState() {
+  if(httpd.hasArg("state")){
+    String stateParam = httpd.arg("state");
+    Serial.println(stateParam);
+    if (stateParam == "true") {
+      modeAuto = true;
+    } else if (stateParam == "false") {
+      modeAuto = false;
+    }
+  }
+}
+
+
 void handleTemperatureRequest() {
   String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
   httpd.send(200, "application/json", jsonResponse);
@@ -118,6 +131,11 @@ void handleTemperatureStableRequest() {
   String stateParam = httpd.arg("state");
 }
 
+void handleTemperatureRequest() {
+  String jsonResponse = "{\"toggleHeating\": " + String(modeAuto) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
 void HandleFileRequest(){
   String fileName = httpd.uri();
@@ -147,6 +165,7 @@ void setup() {
   LittleFS.begin();
   httpd.onNotFound(HandleFileRequest);
   httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
+  httpd.on("/toggle-mode", HTTP_GET, toggleModeState);
   httpd.on("/temperature", HTTP_GET, handleTemperatureRequest);
   httpd.on("/temperaturemin2m", HTTP_GET, handleTemperatureMin2MRequest);
   httpd.on("/temperaturemax2m", HTTP_GET, handleTemperatureMax2MRequest);
@@ -161,14 +180,11 @@ void setup() {
 //---------------------------------
   windowStartTime = millis();
   Setpoint = 43;
-  tempPID.SetOutputLimits(WindowSizeOn,windowStartOff);
+  tempPID.SetOutputLimits(0,WindowSizeOn); // windowStartOff
   tempPID.SetMode(AUTOMATIC);
 //---------------------------------
 
 }
-
-
-
 
 void CalculerTempsTemperatureStable(){
     float secondes = (millis() - tempsAvantTemperatureStable) / 1000; 
@@ -188,34 +204,57 @@ void CalculerTemperature(){
 
 void MaintienTemperature(){
 
- Input = temperatureCourante;
-  tempPID.Compute();
+  Input = temperatureCourante;
+  bool b = tempPID.Compute();
+  bool allume = false;
 
-  if (millis() - windowStartTime > WindowSizeOn)
-  { //time to shift the Relay Window
-    windowStartTime += WindowSizeOn;
+  // Calcul du temps d'allumage et d'extinction en fonction du pourcentage
+  int tempsAllumage = WindowSizeOn * (Output / 100.0);
+  int tempsExtinction = WindowSizeOn - tempsAllumage;
+
+  if(b && modeAuto){
+    if (millis() - windowStartTime > WindowSizeOn)
+    { //time to shift the Relay Window
+      windowStartTime += WindowSizeOn;
+    }
+    if (Output > 0 && millis() - windowStartTime < tempsAllumage) {
+      allume = true;
+      //digitalWrite(relais, HIGH);
+      //Serial.print("HIGH - O: "+ (String)Output);
+    }
+    else{
+      allume = false;
+      //digitalWrite(relais, LOW);
+      //Serial.print("LOW - O: " + (String)Output);
+    } 
+
+    if(allumer != allume){
+      allumer = allume;
+      digitalWrite(relais, allumer);
+      Serial.print(allumer + " - Op: " + (String)Output);
+
+    }
+
   }
-  if (Output < millis() - windowStartTime) digitalWrite(relais, HIGH);
-  else digitalWrite(relais, LOW);
 
 
 }
 
 void loop() {
   httpd.handleClient();
-  if(temperatureCourante != 20)
-  temperatureCourante = 43;
   if( millis() % 50 != 0 )
        return;
   else {
-    //CalculerTemperature();
+    CalculerTemperature();
+    if(allumer)
+    MaintienTemperature();
   }
 
   if(temperatureCourante <= 43 && allumer){
     chaud = true;
   }
 
-  if(temperatureCourante >= 50 && allumer){
+  if(temperatureCourante >= 50){
     chaud = false;
     digitalWrite(relais, LOW);
   }

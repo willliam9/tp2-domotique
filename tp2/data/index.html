@@ -254,6 +254,7 @@
 
         <div class="button-container temperature-value temperature-label">
             <button id="toggleButton" class="inactive" onclick="toggleHeating()">Activer Chauffage</button>
+            <button id="toggleButtonMode" class="options-button" onclick="toggleModeAuto()">Auto</button>
             <button id="optionsButton" class="options-button" onclick="toggleOptionsPanel()">⚙️</button>
         </div>
         <div id="optionsPanel" class="options-panel temperature-value" style="display: none;">
@@ -284,6 +285,7 @@
     <script>
 
 	var heatingState = false; // État initial du chauffage (éteint)
+	var modeAutoState = true; // État initial du mode de chauffage (activé) (auto ou fixe...)
 	var currentTemperature = 10;
     function toggleHeating() {
         heatingState = !heatingState; 
@@ -295,6 +297,15 @@
         xhr.send();
     }
 
+    function toggleModeAuto() {
+        modeAutoState = !modeAutoState; 
+        updateModeAutoStateUI();
+        
+        // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/toggle-mode?state=' + modeAutoState, true);
+        xhr.send();
+    }
 
     function updateHeatingStateUI() {
         var button = document.getElementById('toggleButton');
@@ -304,6 +315,17 @@
         } else {
             button.textContent = 'Activer Chauffage 🥶';
             button.style.backgroundColor = '#f44336';
+        }
+    }
+
+    function updateModeAutoStateUI() {
+        var button = document.getElementById('toggleButtonMode');
+        if (modeAutoState) {
+            button.textContent = 'Auto';
+            button.style.backgroundColor = '#0BA800'; 
+        } else {
+            button.textContent = 'Fixe';
+            button.style.backgroundColor = '#DE0202';
         }
     }
 
@@ -323,6 +345,7 @@
         getTemperatureMin5M();
         getTemperatureMax5M();
         getTemperatureStable();
+        getToggleHeating();
 	}, 1000);
 	
 	function getTemperature() {
@@ -411,7 +434,20 @@
 		xhr.send();
 	}
 
-
+	function getToggleHeating() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '/toggleHeating', true);
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				var b = response.toggleHeating;
+                if(b == 0) heatingState = false
+                else heatingState = true;
+                updateHeatingStateUI();
+			}
+		};
+		xhr.send();
+	}
     
 
 	function toggleOptionsPanel() {
@@ -505,8 +541,10 @@
     getTemperatureMin5M();
     getTemperatureMax5M();
     getTemperatureStable();
+    getToggleHeating();
 	updateHeatingIntensityUI();
     updateHeatingStateUI();
+	updateModeAutoStateUI();
     </script>
 </body>
 
