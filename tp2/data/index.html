@@ -366,7 +366,7 @@
 		xhr.open('GET', '/temperaturemin2m', true);
 		xhr.onload = function() {
 			if (xhr.status === 200) {
-				var response = JSON.parse(xhr.responseText);
+                var response = JSON.parse(xhr.responseText);
 				var minTemp2Minutes = response.temperaturemin2m;
 				document.getElementById('minTemp2Minutes').textContent = minTemp2Minutes ;
 			}

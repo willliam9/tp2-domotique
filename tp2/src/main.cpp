@@ -16,9 +16,9 @@ double Kp=2, Ki=5, Kd=1;
 
 int WindowSizeOn = 300;
 unsigned long windowStartTime;
+PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
 
-String tempsTemperatureStable = "";
 float secondeTemperatureStable = 0;
 
 double max2Minutes = 0;
@@ -27,8 +27,10 @@ double min2Minutes = 0;
 double max5Minutes = 0;
 double min5Minutes = 0;
 
-int maxActuel = 0;
-int minActuel = 100;
+double maxActuel2Minutes = 0;
+double minActuel2Minutes = 1000;
+double maxActuel5Minutes = 0;
+double minActuel5Minutes = 1000;
 
 
 bool chaud = false;
@@ -38,14 +40,6 @@ bool modeAuto = true; // Est-ce que le crockpot peut s'éteindre et s'allumer pa
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
 unsigned long tempsEcoule5DernieresMinutes = 0;
-
-
-
-PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-
-//Pas certain que ce soit utile.
-//int delaisTemp = 1000;
-//unsigned long dernierMillisTemp;
 
 ESP8266WebServer httpd(80);
 
@@ -139,7 +133,7 @@ void handleTemperatureRequest() {
 
 void HandleFileRequest(){
   String fileName = httpd.uri();
-  Serial.println(fileName); // 
+  Serial.println(fileName);
   if(fileName.endsWith("/"))
     fileName = "index.html";
   if(LittleFS.exists(fileName)){
@@ -268,25 +262,34 @@ void loop() {
       tempsAvantTemperatureStable = millis();
     }
 
-    if(minActuel > temperatureCourante)
-      minActuel = temperatureCourante;
+    if(minActuel2Minutes > temperatureCourante)
+      minActuel2Minutes = temperatureCourante;
+    
+    if(minActuel5Minutes > temperatureCourante)
+      minActuel5Minutes = temperatureCourante;
 
-    if(maxActuel < temperatureCourante)
-      maxActuel = temperatureCourante;
+    if(maxActuel2Minutes < temperatureCourante)
+      maxActuel2Minutes = temperatureCourante;
+
+    if(maxActuel5Minutes < temperatureCourante)
+      maxActuel5Minutes = temperatureCourante;
 
     if (((millis() - tempsEcoule2DernieresMinutes) / 1000) / 60 >= 2)
     {
       tempsEcoule2DernieresMinutes = millis();
-      min2Minutes = minActuel;
-      max2Minutes = maxActuel;
-      temperatureCourante = 20;
+      min2Minutes = minActuel2Minutes;
+      max2Minutes = maxActuel2Minutes;
+      maxActuel2Minutes = 0;
+      minActuel2Minutes = 1000;
     }
 
     if (((millis() - tempsEcoule5DernieresMinutes) / 1000) / 60 >= 5)
     {
       tempsEcoule5DernieresMinutes = millis();
-      min5Minutes = minActuel;
-      max5Minutes = maxActuel;
+      min5Minutes = minActuel5Minutes;
+      max5Minutes = maxActuel5Minutes;
+      maxActuel5Minutes = 0;
+      minActuel5Minutes = 1000;
     }    
   }
 }
