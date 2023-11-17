@@ -379,6 +379,10 @@
         getTemperatureStable();
         getToggleHeating();
 	}, 1000);
+
+    setInterval(function() {
+        getToggleHeating();
+	}, 100);
 	
 	function getTemperature() {
 		var xhr = new XMLHttpRequest();

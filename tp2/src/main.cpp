@@ -14,7 +14,7 @@ double temperatureCourante;
 double Setpoint, Input, Output;
 double Kp=2, Ki=5, Kd=1;
 
-int WindowSizeOn = 300;
+int WindowSizeOn = 300; // 300
 unsigned long windowStartTime;
 PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
@@ -125,8 +125,8 @@ void handleTemperatureStableRequest() {
   String stateParam = httpd.arg("state");
 }
 
-void handleTemperatureRequest() {
-  String jsonResponse = "{\"toggleHeating\": " + String(modeAuto) + "}";
+void handleToogleHeatingRequest() {
+  String jsonResponse = "{\"toggleHeating\": " + String(allumer) + "}";
   httpd.send(200, "application/json", jsonResponse);
   String stateParam = httpd.arg("state");
 }
@@ -166,6 +166,7 @@ void setup() {
   httpd.on("/temperaturemin5m", HTTP_GET, handleTemperatureMin5MRequest);
   httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
   httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
+  httpd.on("/toggleHeating", HTTP_GET, handleToogleHeatingRequest);
 
   httpd.begin();
 
