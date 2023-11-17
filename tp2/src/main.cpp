@@ -68,9 +68,11 @@ void toggleHeatingState() {
     Serial.println(stateParam);
     if (stateParam == "true") {
       allumer = true;
+      chaud = true;
       digitalWrite(relais,HIGH);
     } else if (stateParam == "false") {
       allumer = false;
+      chaud = false;
       digitalWrite(relais,LOW);
     }
   }
@@ -206,27 +208,24 @@ void MaintienTemperature(){
   // Calcul du temps d'allumage et d'extinction en fonction du pourcentage
   int tempsAllumage = WindowSizeOn * (Output / 100.0);
   int tempsExtinction = WindowSizeOn - tempsAllumage;
+  Serial.println("OutPut : " + (String)Output);
 
-  if(b && modeAuto){
+  if(modeAuto){
     if (millis() - windowStartTime > WindowSizeOn)
     { //time to shift the Relay Window
       windowStartTime += WindowSizeOn;
     }
     if (Output > 0 && millis() - windowStartTime < tempsAllumage) {
       allume = true;
-      //digitalWrite(relais, HIGH);
-      //Serial.print("HIGH - O: "+ (String)Output);
     }
     else{
       allume = false;
-      //digitalWrite(relais, LOW);
-      //Serial.print("LOW - O: " + (String)Output);
     } 
 
-    if(allumer != allume){
-      allumer = allume;
-      digitalWrite(relais, allumer);
-      Serial.print(allumer + " - Op: " + (String)Output);
+    if(chaud != allume){
+      chaud = allume;
+      digitalWrite(relais, chaud);
+      Serial.print((String)chaud + " - Op: " + (String)Output);
 
     }
 
