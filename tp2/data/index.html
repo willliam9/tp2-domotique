@@ -318,13 +318,12 @@
 
 	var heatingState = false; // État initial du chauffage (éteint)
 	var modeAutoState = true; // État initial du mode de chauffage (activé) (auto ou fixe...)
-    var heatingIntensity = 50; // La valeur dois être remplacer par l'intensité de chauffage réelle
+    var heatingIntensity; 
 	var currentTemperature = 10;
     function toggleHeating() {
         heatingState = !heatingState; 
         updateHeatingStateUI();
         
-        // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/toggle-heating?state=' + heatingState, true);
         xhr.send();
@@ -334,7 +333,6 @@
         modeAutoState = !modeAutoState; 
         updateModeAutoStateUI();
         
-        // Une requête AJAX est effectuer pour envoyer l'état du chauffage au serveur
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/toggle-mode?state=' + modeAutoState, true);
         xhr.send();
@@ -370,7 +368,6 @@
 	//Mettre à jour les données à toutes les 1 secondes. Exemple : température actuelle
 	setInterval(function() {
         getTemperature();
-        //getOutput();
         getTemperatureMin2M();
         getTemperatureMax2M();
         getTemperatureMin5M();
@@ -503,10 +500,7 @@
 	}
 
 	function changeTextSize(value) {
-		// Sélectionnez tous les éléments de texte sur la page
 		var textElements = document.querySelectorAll('.txt-fms');
-
-		// Parcourez tous les éléments de texte et modifiez leur taille de police
 		textElements.forEach(function (element) {
 			element.style.fontSize = value + 'px';
 		});

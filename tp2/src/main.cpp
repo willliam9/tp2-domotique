@@ -4,6 +4,7 @@
 #include <LittleFS.h>
 #include <PID_v1.h>
 
+// William Lussier, Nicolas St-Arnault et Olivier Mathieu
 
 const int thermometre = A0;
 const int relais = D1;
@@ -184,7 +185,7 @@ void setup() {
 //---------------------------------
   windowStartTime = millis();
   Setpoint = 43;
-  tempPID.SetOutputLimits(0,WindowSizeOn); // windowStartOff
+  tempPID.SetOutputLimits(0,WindowSizeOn);
   tempPID.SetMode(AUTOMATIC);
 //---------------------------------
 
@@ -219,10 +220,10 @@ void MaintienTemperature(){
 
   if(modeAuto){
     if (millis() - windowStartTime > WindowSizeOn)
-    { //time to shift the Relay Window
+    {
       windowStartTime += WindowSizeOn;
     }
-    if (millis() - windowStartTime < tempsAllumage) { // Output > 0 && 
+    if (millis() - windowStartTime < tempsAllumage) {
       allume = true;
     }
     else{
