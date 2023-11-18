@@ -14,7 +14,7 @@ double temperatureCourante;
 double Setpoint, Input, Output;
 double Kp=300, Ki=20, Kd=1;
 
-int WindowSizeOn = 100; // 300
+int WindowSizeOn = 100; // 300 // 100
 unsigned long windowStartTime;
 PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
@@ -175,6 +175,7 @@ void setup() {
   httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
   httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
   httpd.on("/toggleHeating", HTTP_GET, handleToogleHeatingRequest);
+  httpd.on("/output", HTTP_GET, handleOutputRequest);
 
   httpd.begin();
 
