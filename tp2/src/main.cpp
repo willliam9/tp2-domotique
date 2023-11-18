@@ -12,9 +12,9 @@ double temperatureCourante;
 // set PID 
 //---------------------------------
 double Setpoint, Input, Output;
-double Kp=2, Ki=5, Kd=1;
+double Kp=300, Ki=20, Kd=1;
 
-int WindowSizeOn = 300; // 300
+int WindowSizeOn = 100; // 300
 unsigned long windowStartTime;
 PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
@@ -133,6 +133,12 @@ void handleToogleHeatingRequest() {
   String stateParam = httpd.arg("state");
 }
 
+void handleOutputRequest() {
+  String jsonResponse = "{\"output\": " + String(Output) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
+
 void HandleFileRequest(){
   String fileName = httpd.uri();
   Serial.println(fileName);
@@ -215,7 +221,7 @@ void MaintienTemperature(){
     { //time to shift the Relay Window
       windowStartTime += WindowSizeOn;
     }
-    if (Output > 0 && millis() - windowStartTime < tempsAllumage) {
+    if (millis() - windowStartTime < tempsAllumage) { // Output > 0 && 
       allume = true;
     }
     else{
@@ -236,12 +242,14 @@ void MaintienTemperature(){
 
 void loop() {
   httpd.handleClient();
+
+  if(allumer)
+  MaintienTemperature();
+
   if( millis() % 50 != 0 )
        return;
   else {
     CalculerTemperature();
-    if(allumer)
-    MaintienTemperature();
   }
 
   if(temperatureCourante <= 43 && allumer){
