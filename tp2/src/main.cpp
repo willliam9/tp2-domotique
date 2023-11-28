@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <LittleFS.h>
 #include <PID_v1.h>
-
+#include <PubSubClient.h>
 // William Lussier, Nicolas St-Arnault et Olivier Mathieu
 
 const int thermometre = A0;
