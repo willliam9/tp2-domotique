@@ -44,9 +44,13 @@ unsigned long tempsEcoule5DernieresMinutes = 0;
 
 //PubSet Configuration 
 //------------------------------------------------------------------
-const char* ssid = "172.16.0.168/24";
-const char* password = "";
-const char* mqtt_server = "broker.mqtt-dashboard.com";
+const char* ssid = "DEPTI_2.4";
+const char* password = "2021depTI";
+const char* mqttServer = "172.16.0.168"; // peut-être mettre /24
+const int mqttPort = 8123; //1883
+const char* mqttUser = "pi";
+const char* mqttPassword = "pi";
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 unsigned long lastMsg = 0;
@@ -58,7 +62,7 @@ int value = 0;
 
 
 
-// PubSub setpe wifi client 
+// PubSub setup wifi client 
 //------------------------------------------------------------------v
 void setup_wifi() {
 
@@ -75,6 +79,10 @@ void setup_wifi() {
     Serial.print(".");
   }
 
+    Serial.println("Connecté au WiFi");
+
+    client.setServer(mqttServer, mqttPort);
+
   randomSeed(micros());
 
   Serial.println("");
@@ -82,6 +90,7 @@ void setup_wifi() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
+
 //------------------------------------------------------------------
 
 
@@ -118,7 +127,7 @@ void reconnect() {
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), mqttUser, mqttPassword)) { //envoyer le char*
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish("outTopic", "hello world");
@@ -130,6 +139,8 @@ void reconnect() {
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
      
+
+     //CALL BACK = bouton
     }
   }
 }
@@ -258,8 +269,8 @@ void setup() {
   // PubSup setup 
   //------------------------------------------------------------------
   pinMode(BUILTIN_LED, OUTPUT); 
-    setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  setup_wifi();
+  client.setServer(mqttServer, 1883);
   client.setCallback(callback);
   //------------------------------------------------------------------
 
@@ -350,14 +361,15 @@ void loop() {
 
   if(allumer)
   MaintienTemperature();
-
+ if( millis() % 5000 != 0 ){
+     if (!client.connected()) {
+        reconnect();
+  }
+ }
   if( millis() % 50 != 0 )
        return;
   else {
     CalculerTemperature();
-     if (!client.connected()) {
-    reconnect();
-  }
   }
 
 
@@ -373,7 +385,7 @@ void loop() {
     snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
     Serial.print("Publish message: ");
     Serial.println(msg);
-    client.publish("outTopic", msg);
+    client.publish("yogourt/temp", msg); //mettre la température en string à la place de msg
   }
   //------------------------------------------------------------------
 
