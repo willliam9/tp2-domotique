@@ -382,7 +382,7 @@ void loop() {
   if (now - lastMsg > 2000) {
     lastMsg = now;
     ++value;
-    snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
+    snprintf (msg, MSG_BUFFER_SIZE, "Temperature : %.2f degré Celsius", temperatureCourante);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish("yogourt/temp", msg); //mettre la température en string à la place de msg
