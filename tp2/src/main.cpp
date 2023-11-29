@@ -15,7 +15,7 @@ double temperatureCourante;
 double Setpoint, Input, Output;
 double Kp=300, Ki=20, Kd=1;
 
-int WindowSizeOn = 100; // 300 // 100
+int WindowSizeOn = 100;
 unsigned long windowStartTime;
 PID tempPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 //---------------------------------
@@ -36,7 +36,7 @@ double minActuel5Minutes = 1000;
 
 bool chaud = false;
 bool allumer = false;
-bool modeAuto = true; // Est-ce que le crockpot peut s'éteindre et s'allumer par lui même. // Est-ce que la méthode MaintienTemperature() peut de faire appeler 
+bool modeAuto = true;
 
 unsigned long tempsAvantTemperatureStable = 0;
 unsigned long tempsEcoule2DernieresMinutes = 0;
@@ -47,7 +47,7 @@ unsigned long tempsEcoule5DernieresMinutes = 0;
 const char* ssid = "DEPTI_2.4";
 const char* password = "2021depTI";
 const char* mqttServer = "172.16.0.168"; // peut-être mettre /24
-const int mqttPort = 8123; //1883
+const int mqttPort = 1883; //1883 //8123
 const char* mqttUser = "pi";
 const char* mqttPassword = "pi";
 
@@ -132,7 +132,9 @@ void reconnect() {
       // Once connected, publish an announcement...
       client.publish("outTopic", "hello world");
       // ... and resubscribe
-      client.subscribe("inTopic");
+      client.subscribe("yogourt/control");
+      client.subscribe("yogourt/temp");
+
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
