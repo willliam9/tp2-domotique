@@ -58,7 +58,7 @@ unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 //------------------------------------------------------------------
-//ESP8266WebServer httpd(80); // server 
+ESP8266WebServer httpd(80); // server 
 
 
 
@@ -166,98 +166,98 @@ String GetContentType(String filename){
   
 }
 
-// void toggleHeatingState() {
-//   if(httpd.hasArg("state")){
-//     String stateParam = httpd.arg("state");
-//     Serial.println(stateParam);
-//     if (stateParam == "true") {
-//       allumer = true;
-//       chaud = true;
-//       digitalWrite(relais,HIGH);
-//     } else if (stateParam == "false") {
-//       allumer = false;
-//       chaud = false;
-//       digitalWrite(relais,LOW);
-//     }
-//   }
-// }
+void toggleHeatingState() {
+  if(httpd.hasArg("state")){
+    String stateParam = httpd.arg("state");
+    Serial.println(stateParam);
+    if (stateParam == "true") {
+      allumer = true;
+      chaud = true;
+      digitalWrite(relais,HIGH);
+    } else if (stateParam == "false") {
+      allumer = false;
+      chaud = false;
+      digitalWrite(relais,LOW);
+    }
+  }
+}
 
-// void toggleModeState() {
-//   if(httpd.hasArg("state")){
-//     String stateParam = httpd.arg("state");
-//     Serial.println(stateParam);
-//     if (stateParam == "true") {
-//       modeAuto = true;
-//     } else if (stateParam == "false") {
-//       modeAuto = false;
-//     }
-//   }
-// }
+void toggleModeState() {
+  if(httpd.hasArg("state")){
+    String stateParam = httpd.arg("state");
+    Serial.println(stateParam);
+    if (stateParam == "true") {
+      modeAuto = true;
+    } else if (stateParam == "false") {
+      modeAuto = false;
+    }
+  }
+}
 
 
-// void handleTemperatureRequest() {
-//   String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureRequest() {
+  String jsonResponse = "{\"temperature\": " + String(temperatureCourante) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleTemperatureMin2MRequest() {
-//   String jsonResponse = "{\"temperaturemin2m\": " + String(min2Minutes) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureMin2MRequest() {
+  String jsonResponse = "{\"temperaturemin2m\": " + String(min2Minutes) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleTemperatureMax2MRequest() {
-//   String jsonResponse = "{\"temperaturemax2m\": " + String(max2Minutes) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureMax2MRequest() {
+  String jsonResponse = "{\"temperaturemax2m\": " + String(max2Minutes) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleTemperatureMin5MRequest() {
-//   String jsonResponse = "{\"temperaturemin5m\": " + String(min5Minutes) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureMin5MRequest() {
+  String jsonResponse = "{\"temperaturemin5m\": " + String(min5Minutes) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleTemperatureMax5MRequest() {
-//   String jsonResponse = "{\"temperaturemax5m\": " + String(max5Minutes) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureMax5MRequest() {
+  String jsonResponse = "{\"temperaturemax5m\": " + String(max5Minutes) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleTemperatureStableRequest() {
-//   String jsonResponse = "{\"secondeTemperatureStable\": " + String(secondeTemperatureStable) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleTemperatureStableRequest() {
+  String jsonResponse = "{\"secondeTemperatureStable\": " + String(secondeTemperatureStable) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleToogleHeatingRequest() {
-//   String jsonResponse = "{\"toggleHeating\": " + String(allumer) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleToogleHeatingRequest() {
+  String jsonResponse = "{\"toggleHeating\": " + String(allumer) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// void handleOutputRequest() {
-//   String jsonResponse = "{\"output\": " + String(Output) + "}";
-//   httpd.send(200, "application/json", jsonResponse);
-//   String stateParam = httpd.arg("state");
-// }
+void handleOutputRequest() {
+  String jsonResponse = "{\"output\": " + String(Output) + "}";
+  httpd.send(200, "application/json", jsonResponse);
+  String stateParam = httpd.arg("state");
+}
 
-// Server
-// void HandleFileRequest(){    
-//   String fileName = httpd.uri();
-//   Serial.println(fileName);
-//   if(fileName.endsWith("/"))
-//     fileName = "index.html";
-//   if(LittleFS.exists(fileName)){
-//     File file = LittleFS.open(fileName,"r");
-//     httpd.streamFile(file, GetContentType(fileName));
-//     file.close();
-//   }
-//   else {
-//     httpd.send(404,"text/plain", "404 not found");
-//   }
-// }
+//Server
+void HandleFileRequest(){    
+  String fileName = httpd.uri();
+  Serial.println(fileName);
+  if(fileName.endsWith("/"))
+    fileName = "index.html";
+  if(LittleFS.exists(fileName)){
+    File file = LittleFS.open(fileName,"r");
+    httpd.streamFile(file, GetContentType(fileName));
+    file.close();
+  }
+  else {
+    httpd.send(404,"text/plain", "404 not found");
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -276,23 +276,23 @@ void setup() {
 
 
               
- // WiFi.softAP("TP2-Stan", "motdepasse"); Server
+  WiFi.softAP("TP2-Stan", "motdepasse"); //Server
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
 
- // httpd.onNotFound(HandleFileRequest); Server 
-  // httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
-  // httpd.on("/toggle-mode", HTTP_GET, toggleModeState);
-  // httpd.on("/temperature", HTTP_GET, handleTemperatureRequest);
-  // httpd.on("/temperaturemin2m", HTTP_GET, handleTemperatureMin2MRequest);
-  // httpd.on("/temperaturemax2m", HTTP_GET, handleTemperatureMax2MRequest);
-  // httpd.on("/temperaturemin5m", HTTP_GET, handleTemperatureMin5MRequest);
-  // httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
-  // httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
-  // httpd.on("/toggleHeating", HTTP_GET, handleToogleHeatingRequest);
-  // httpd.on("/output", HTTP_GET, handleOutputRequest);
-  // httpd.begin();
+ httpd.onNotFound(HandleFileRequest); //Server 
+  httpd.on("/toggle-heating", HTTP_GET, toggleHeatingState);
+  httpd.on("/toggle-mode", HTTP_GET, toggleModeState);
+  httpd.on("/temperature", HTTP_GET, handleTemperatureRequest);
+  httpd.on("/temperaturemin2m", HTTP_GET, handleTemperatureMin2MRequest);
+  httpd.on("/temperaturemax2m", HTTP_GET, handleTemperatureMax2MRequest);
+  httpd.on("/temperaturemin5m", HTTP_GET, handleTemperatureMin5MRequest);
+  httpd.on("/temperaturemax5m", HTTP_GET, handleTemperatureMax5MRequest);
+  httpd.on("/secondeTemperatureStable", HTTP_GET, handleTemperatureStableRequest);
+  httpd.on("/toggleHeating", HTTP_GET, handleToogleHeatingRequest);
+  httpd.on("/output", HTTP_GET, handleOutputRequest);
+  httpd.begin();
 
 
 // PID 
@@ -357,11 +357,11 @@ void MaintienTemperature(){
 }
 
 void loop() {
-  //httpd.handleClient(); TOOD server 
+  httpd.handleClient();
 
   if(allumer)
   MaintienTemperature();
- if( millis() % 5000 != 0 ){
+ if( millis() % 1000 != 0 ){
      if (!client.connected()) {
         reconnect();
   }
