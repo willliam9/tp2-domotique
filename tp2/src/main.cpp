@@ -97,21 +97,27 @@ void setup_wifi() {
 // Return a call PubSub 
 //------------------------------------------------------------------
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
+  // Serial.print("Message arrived [");
+  // Serial.print(topic);
+  // Serial.print("] ");
+  // for (int i = 0; i < length; i++) {
+  //   Serial.print((char)payload[i]);
+  // }
+  // Serial.println();
+  String response = "";
+  for (int i = 0; i < length; i++)
+  {
+    response += (char)payload[i];
   }
-  Serial.println();
 
-  // Switch on the LED if an 1 was received as first character
-  if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-    // but actually the LED is on; this is because
-    // it is active low on the ESP-01)
-  } else {
-    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+  if (response == "off") {
+    allumer = false;
+      chaud = false;
+      Serial.println("Ça a passé dans le off");
+  } else if(response == "on") {
+    allumer = true;
+    chaud = true;
+      Serial.println("Ça a passé dans le on");
   }
 }
 //------------------------------------------------------------------
@@ -279,6 +285,7 @@ void setup() {
 
               
   WiFi.softAP("TP2-Stan", "motdepasse"); //Server
+  Serial.println("soft APIP : ");
   Serial.println(WiFi.softAPIP());
 
   LittleFS.begin();
