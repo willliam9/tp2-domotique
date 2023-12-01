@@ -46,8 +46,8 @@ unsigned long tempsEcoule5DernieresMinutes = 0;
 //------------------------------------------------------------------
 const char* ssid = "DEPTI_2.4";
 const char* password = "2021depTI";
-const char* mqttServer = "172.16.0.168"; // peut-être mettre /24
-const int mqttPort = 1883; //1883 //8123
+const char* mqttServer = "172.16.0.168";
+const int mqttPort = 1883;
 const char* mqttUser = "pi";
 const char* mqttPassword = "pi";
 
