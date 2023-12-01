@@ -97,27 +97,31 @@ void setup_wifi() {
 // Return a call PubSub 
 //------------------------------------------------------------------
 void callback(char* topic, byte* payload, unsigned int length) {
-  // Serial.print("Message arrived [");
-  // Serial.print(topic);
-  // Serial.print("] ");
-  // for (int i = 0; i < length; i++) {
-  //   Serial.print((char)payload[i]);
-  // }
-  // Serial.println();
+   Serial.print("Message arrived [");
+   Serial.print(topic);
+   Serial.print("] ");
+   for (int i = 0; i < length; i++) {
+     Serial.print((char)payload[i]);
+   }
+   Serial.println();
   String response = "";
-  for (int i = 0; i < length; i++)
+  for (int i = 0; i < length; ++i)
   {
     response += (char)payload[i];
   }
 
-  if (response == "off") {
-    allumer = false;
+  Serial.print(response);
+  Serial.print(response.length());
+  if(response.length() >= 3){
+    if (response[0] == 'o' && response[1] == 'f' && response[2] == 'f') {
+      allumer = false;
       chaud = false;
-      Serial.println("Ça a passé dans le off");
-  } else if(response == "on") {
-    allumer = true;
-    chaud = true;
-      Serial.println("Ça a passé dans le on");
+      Serial.print("Ça a passé dans le off");
+    } else if(response[0] == 'o' && response [1] == 'n') {
+      allumer = true;
+      chaud = true;
+      Serial.print("Ça a passé dans le on");
+    }
   }
 }
 //------------------------------------------------------------------
@@ -370,11 +374,13 @@ void loop() {
 
   if(allumer)
   MaintienTemperature();
- if( millis() % 1000 != 0 ){
-     if (!client.connected()) {
-        reconnect();
+
+ if(millis() % 1000 != 0){
+    if (!client.connected()) {
+      reconnect();
+    }
   }
- }
+  
   if( millis() % 50 != 0 )
        return;
   else {
