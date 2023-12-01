@@ -116,11 +116,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
     if (response[0] == 'o' && response[1] == 'f' && response[2] == 'f') {
       allumer = false;
       chaud = false;
-      Serial.print("Ça a passé dans le off");
+      digitalWrite(relais, LOW);
     } else if(response[0] == 'o' && response [1] == 'n') {
       allumer = true;
       chaud = true;
-      Serial.print("Ça a passé dans le on");
+      digitalWrite(relais, HIGH);
     }
   }
 }
@@ -130,18 +130,18 @@ void callback(char* topic, byte* payload, unsigned int length) {
 // Reconnect 
 //------------------------------------------------------------------
 void reconnect() {
-  // Loop until we're reconnected
+  
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    // Create a random client ID
+  
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
-    // Attempt to connect
-    if (client.connect(clientId.c_str(), mqttUser, mqttPassword)) { //envoyer le char*
+  
+    if (client.connect(clientId.c_str(), mqttUser, mqttPassword)) {
       Serial.println("connected");
-      // Once connected, publish an announcement...
+  
       client.publish("outTopic", "hello world");
-      // ... and resubscribe
+  
       client.subscribe("yogourt/control");
       client.subscribe("yogourt/temp");
 
@@ -149,10 +149,6 @@ void reconnect() {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-     
-
-     //CALL BACK = bouton
     }
   }
 }
@@ -340,7 +336,6 @@ void MaintienTemperature(){
   bool b = tempPID.Compute();
   bool allume = false;
 
-  // Calcul du temps d'allumage et d'extinction en fonction du pourcentage
   int tempsAllumage = WindowSizeOn * (Output / 100.0);
   int tempsExtinction = WindowSizeOn - tempsAllumage;
   Serial.println("OutPut : " + (String)Output);
@@ -400,7 +395,7 @@ void loop() {
     snprintf (msg, MSG_BUFFER_SIZE, "Temperature : %.2f degré Celsius", temperatureCourante);
     Serial.print("Publish message: ");
     Serial.println(msg);
-    client.publish("yogourt/temp", msg); //mettre la température en string à la place de msg
+    client.publish("yogourt/temp", msg);
   }
   //------------------------------------------------------------------
 
